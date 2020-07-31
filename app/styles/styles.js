@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import colors from './colors';
+import Colors from './colors';
 
 // Estilos para SplashScreen
 const splashStyle = StyleSheet.create({
@@ -8,7 +8,7 @@ const splashStyle = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors.WHITE
+        backgroundColor: Colors.WHITE
     }
 });
 
@@ -46,7 +46,7 @@ const homeCardStyles = StyleSheet.create({
     },
 
     button: {
-        backgroundColor: colors.PRIMARYCOLOR
+        backgroundColor: Colors.PRIMARYCOLOR
     },
 
     image: {
@@ -54,7 +54,7 @@ const homeCardStyles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',  
-        backgroundColor: colors.WHITE      
+        backgroundColor: Colors.WHITE      
     },
 
     cardImage: {
@@ -67,8 +67,7 @@ const homeCardStyles = StyleSheet.create({
 const mapStyles = StyleSheet.create({
     container: {
       ...StyleSheet.absoluteFillObject,
-      height: 460,
-      width: 400,
+      flex: 1,
       justifyContent: 'flex-end',
       alignItems: 'center',
     },
@@ -81,6 +80,126 @@ const mapStyles = StyleSheet.create({
     map: {
       ...StyleSheet.absoluteFillObject,
     },
+    button: {
+      width: 250,
+      height: 60,
+      backgroundColor: Colors.AQUABLUE,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 4,
+      marginBottom:12
+    },
+    buttonText: {
+      textAlign: 'center',
+      fontSize: 15,
+      color: '#fff'
+    },
+    filterBtn : {
+        position: 'absolute',
+        width:50, height:50,
+        backgroundColor: Colors.WHITE,
+        borderRadius:30,
+        bottom:20,right:20,
+        alignItems: 'center',
+        justifyContent:'center',
+    },
    });
 
-export { splashStyle, loginStyles, homeScreenStyles, homeCardStyles, mapStyles };
+// Styles para la Details View
+const detailsScreenStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems:'center',
+        padding: 15,
+    },
+    subContainer: {
+        width: "100%",
+        height: 20,
+        flexDirection: "row",
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        margin: 10
+    },
+    favBtn : {
+        position: 'absolute',
+        width:50, height:50,
+        backgroundColor: Colors.WHITE,
+        borderRadius:30,
+        top:250,right:20,
+        alignItems: 'center',
+        justifyContent:'center',
+    },
+    addRecuerdoBtn : {
+        width:35, height:35,
+        backgroundColor: Colors.SKYBLUE,
+        borderRadius:30,
+        alignItems: 'center',
+        justifyContent:'center',
+        marginTop: 10,       
+    },
+    button: {
+      width: 250,
+      height: 60,
+      backgroundColor: Colors.AQUABLUE,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 4,
+      marginBottom:12
+    },
+    buttonText: {
+      textAlign: 'center',
+      fontSize: 15,
+      color: '#fff'
+    },
+});
+
+const recuerdosScreenStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#fff'
+    },
+    button: {
+      width: 250,
+      height: 60,
+      backgroundColor: Colors.AQUABLUE,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 4,
+      marginBottom:12
+    },
+    buttonDelete : {
+        width:35, height:35,
+        backgroundColor: Colors.RED,
+        borderRadius:30,
+        alignItems: 'center',
+        justifyContent:'center',
+        marginTop: 10,       
+    },
+    buttonText: {
+      textAlign: 'center',
+      fontSize: 15,
+      color: '#fff'
+    },
+    MainContainer: {
+      justifyContent: 'center',
+      flex: 1,
+      paddingTop: 30,
+    },
+    imageThumbnail: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 100,
+    },
+    imageStyle: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      height: 100,
+      flex: 1,
+      margin: 1,
+    },
+  });
+
+export { splashStyle, loginStyles, homeScreenStyles, homeCardStyles, mapStyles, detailsScreenStyles, recuerdosScreenStyles };

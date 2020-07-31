@@ -1,30 +1,22 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from '@screens/HomeScreen';
-import GastronomicosListScreen from '@screens/GastronomicosListScreen';
+import FavoritosListScreen from '@screens/FavoritosListScreen';
 import GastronomicoDetailsScreen from '@screens/GastronomicoDetailsScreen';
 import RecuerdosGastronomicoScreen from '@screens/RecuerdosGastronomicoScreen';
-import AlojamientosListScreen from '@screens/AlojamientosListScreen';
 import AlojamientoDetailsScreen from '@screens/AlojamientoDetailsScreen';
 import RecuerdosAlojamientoScreen from '@screens/RecuerdosAlojamientoScreen';
-import MapScreen from '@screens/MapScreen';
-import SearchScreen from '@screens/SearchScreen';
-import TurAppHeader from '@components/TurAppHeader';
 
 const Stack = createStackNavigator();
 
 
-export default function HomeStackNavigator(){
+export default function FavoritosStackNavigator(){
     return(
         <Stack.Navigator initialRouteName="Home"
             headerMode="screen">
             <Stack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{header: TurAppHeader }}/>
-            <Stack.Screen
-                name="Alojamientos"
-                component={AlojamientosListScreen} />
+                name="FavoritosList"
+                component={FavoritosListScreen}
+                options={{title: "Tus Favoritos", headerTitleAlign: 'center', headerTitleStyle: { fontWeight: 'bold' } }}/>
             <Stack.Screen
                 name="AlojamientoDetails"
                 component={AlojamientoDetailsScreen}
@@ -34,9 +26,6 @@ export default function HomeStackNavigator(){
                 component={RecuerdosAlojamientoScreen}
                 options={() => ({ title: "Recuerdos"})} />
             <Stack.Screen
-                name="Gastronomicos"
-                component={GastronomicosListScreen} />
-            <Stack.Screen
                 name="GastronomicoDetails"
                 component={GastronomicoDetailsScreen}
                 options={({ route }) => ({ title: route.params.item.nombre })} />
@@ -44,12 +33,6 @@ export default function HomeStackNavigator(){
                 name="RecuerdosGastronomico"
                 component={RecuerdosGastronomicoScreen}
                 options={() => ({ title: "Recuerdos"})} />
-            <Stack.Screen
-                name="Mapa"
-                component={MapScreen} />
-            <Stack.Screen
-                name="Search"
-                component={SearchScreen} />
         </Stack.Navigator>
     );
 }

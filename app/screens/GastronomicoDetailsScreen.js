@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import { Image, Text, Divider, Button } from 'react-native-elements';
-import Colors from '@styles/colors';
-import { mapStyles } from '@styles/styles';
+import React, {useState, useEffect} from 'react';
+import {View, ScrollView, ActivityIndicator, TouchableOpacity} from 'react-native';
+import {Image, Text, Divider} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import {mapStyles, detailsScreenStyles} from '@styles/styles';
+import GastronomicosFavService from '@services/GastronomicosFavService';
+import Colors from '@styles/colors';
 
-export default function GastronomicoDetailsScreen({ route }) {
+export default function GastronomicoDetailsScreen({ navigation, route }) {
   const { item } = route.params;
+  const [esFavorito, setEsFavorito] = useState(false);
+  const [gastronomicosFavMeta] = GastronomicosFavService();
+
+  const checkFav = async () => {
+    let valor = await gastronomicosFavMeta.esFavorito(item); 
+    setEsFavorito(valor);
+  };
+
+  useEffect(() => {
+    checkFav();
+  }, []);
 
   const _renderActividades = () => {
     let myloop = [];
@@ -34,28 +46,47 @@ export default function GastronomicoDetailsScreen({ route }) {
     return myloop;
   };
 
-  // let gastronomico = null;
-  // if (data) {
-  //   gastronomico = data.gastronomicos[0]
-  // }
-
-    return (
+  return (
+    <ScrollView>
       <View style={{ flex: 1 }}>
-          <View style={{ flex: 1, alignItems: 'center' }}>
-            <Image
-              source={{ uri: item.foto }}
-              style={{ width:350, height:200 }}
-              PlaceholderContent={<ActivityIndicator />}
-            />
-            <Text h4>{item.nombre}</Text>
-            <View style={{ width: "100%", height: 20, flexDirection: "row", justifyContent: 'center'}}>
+          <View style={detailsScreenStyles.container}>
+            { item.foto ? (
+              <Image
+                source={{ uri: item.foto }}
+                style={{ width:350, height:200 }}
+                PlaceholderContent={<ActivityIndicator />}
+              />) : (
+              <Image
+                source={require('@resources/images/sin-foto.jpg')}
+                style={{ width:350, height:200 }}
+                PlaceholderContent={<ActivityIndicator />}              
+              />
+            )}
+            <Text h3 style={{padding: 10}}>{item.nombre}</Text>
+            <Text>Actividades: </Text>
+            <View style={detailsScreenStyles.subContainer}>
               {_renderActividades()}
             </View>
-            <View style={{ width: "100%", height: 20, flexDirection: "row", justifyContent: 'center'}}>
+            <Text>Especialidades: </Text>
+            <View style={detailsScreenStyles.subContainer}>
               {_renderEspecialidades()}
             </View>
-            <Divider style={{ height:2 }} />
-            <Text>{item.domicilio} - {item.localidade.nombre}</Text>
+            <TouchableOpacity
+              style={detailsScreenStyles.favBtn}
+              onPress={() => {
+                if(esFavorito){
+                  gastronomicosFavMeta.eliminarFavorito(item);
+                  setEsFavorito(false);
+                }else{
+                  gastronomicosFavMeta.agregarFavorito(item);
+                  setEsFavorito(true);
+                }
+              }}>
+              {esFavorito ? <Icon name="heart" size={30} /> : <Icon name="heart-outline" size={30} />}
+            </TouchableOpacity>
+            <Text style={{paddingTop: 15}}>
+              {item.domicilio} - {item.localidade?.nombre}
+            </Text>
             <View style={mapStyles.smallContainer}>
               <MapView 
                   provider={PROVIDER_GOOGLE} // remove if not using Google Maps
@@ -82,53 +113,15 @@ export default function GastronomicoDetailsScreen({ route }) {
                 </MapView>
             </View>
           </View>
-      </View>
-    );
-  }
-
-  
-    // <View style={{ flex: 1 }}>
-    //   {loading ? (
-    //     <ActivityIndicator style={{ flex: 1 }} animating size="large" />
-    //   ) : error ? (
-    //     <Text>ERROR</Text>
-    //   ) : (
-    //     <View style={{ flex: 1, alignItems: 'center' }}>
-    //       {console.log("data.gastronomicos[0].actividad_gastronomicos: ", gastronomico.actividad_gastronomicos)}
-    //       <Image
-    //         source={{ uri: gastronomico.foto }}
-    //         style={{ width:350, height:200 }}
-    //         PlaceholderContent={<ActivityIndicator />}
-    //       />
-    //       <Text h4>{gastronomico.nombre}</Text>
-    //       {_renderActividades(data.gastronomicos[0].actividad_gastronomicos)}
-    //       <Divider style={{ height:2 }} />
-    //       <Text>{gastronomico.domicilio} - {gastronomico.localidade.nombre}</Text>
-    //       <View style={mapStyles.smallContainer}>
-    //         <MapView 
-    //             provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-    //             style={mapStyles.map}
-    //             scrollEnabled={false}
-    //             zoomEnabled={false}
-    //             zoomControlEnabled={false}
-    //             minZoomLevel={13}
-    //             region={{
-    //               latitude: gastronomico.lat,
-    //               longitude: gastronomico.lng,
-    //               latitudeDelta: 0.0922,
-    //               longitudeDelta: 0.0421,
-    //             }}>
-    //               <Marker
-    //               coordinate={{
-    //                 latitude:gastronomico.lat,
-    //                 longitude:gastronomico.lng
-    //               }}>
-    //                 <View style={{ backgroundColor: Colors.GOLD, padding: 5, borderRadius: 10, elevation: 3, shadowRadius: 2, shadowColor: 'black', shadowOffset: { width: 10, height: 10 } }}>
-    //                   <Icon name="food-fork-drink" size={20} color="white" />
-    //                 </View>
-    //               </Marker>
-    //           </MapView>
-    //       </View>
-    //     </View>
-    //   )}
-    // </View>
+        {esFavorito && 
+        <View style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 10 }}>
+          <TouchableOpacity 
+            style={detailsScreenStyles.button}
+            onPress={() => navigation.navigate('RecuerdosGastronomico', { item: item })}>
+            <Text style={detailsScreenStyles.buttonText}>* Ver Recuerdos *</Text>
+          </TouchableOpacity>
+        </View>}
+      </View>      
+    </ScrollView>
+  );
+}

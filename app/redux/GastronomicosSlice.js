@@ -1,12 +1,12 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 
-const LOAD_ALOJAMIENTOS = 'alojamientos/loadAlojamientos';
+const LOAD_GASTRONOMICOS = 'gastronomicos/loadGastronomicos';
 
-export const loadAlojamientos = createAsyncThunk(
-  LOAD_ALOJAMIENTOS,
+export const loadGastronomicos = createAsyncThunk(
+  LOAD_GASTRONOMICOS,
   async () => {
     const response = await global.storage.load({
-      key: 'alojamientos',
+      key: 'gastronomicos',
       autoSync: true,
       syncInBackground: true
     }).then(data => {
@@ -19,8 +19,8 @@ export const loadAlojamientos = createAsyncThunk(
   },
 );
 
-const alojamientosSlice = createSlice({
-  name: 'alojamientos',
+const gastronomicosSlice = createSlice({
+  name: 'gastronomicos',
   initialState: {
     data: [],
     isLoading: false,
@@ -29,19 +29,19 @@ const alojamientosSlice = createSlice({
   reducers: {},
   extraReducers: {
     // you can mutate state directly, since it is using immer behind the scenes
-    [loadAlojamientos.pending]: state => {
+    [loadGastronomicos.pending]: state => {
       console.log("Cargando...");
       state.data = [];
       state.isLoading = true;
       state.error = false;
     },
-    [loadAlojamientos.fulfilled]: (state, action) => {
+    [loadGastronomicos.fulfilled]: (state, action) => {
       console.log("Completado...");
       state.data = action.payload;
       state.isLoading = false;
       state.error = false;
     },
-    [loadAlojamientos.rejected]: state => {
+    [loadGastronomicos.rejected]: state => {
       console.log("Rechazado...");
       state.data = [];
       state.isLoading = false;
@@ -51,19 +51,19 @@ const alojamientosSlice = createSlice({
 });
 
 const selectors = {
-  getAll: state => state.alojamientos.data, // Object.values(state.alojamientos.data),
-  filterByNombre: (state, nombre) => state.alojamientos.data.filter( alojamiento => alojamiento.nombre.toLowerCase().includes(nombre.toLowerCase())),
-  getOne: (state, id) => state.alojamientos.data.find(alojamiento => alojamiento.id == id),
+  getAll: state => state.gastronomicos.data, // Object.values(state.gastronomicos.data),
+  filterByNombre: (state, nombre) => state.gastronomicos.data.filter( gastronomico => gastronomico.nombre.toLowerCase().includes(nombre.toLowerCase())),
+  getOne: (state, id) => state.gastronomicos.data.find(gastronomico => gastronomico.id == id),
   // filterByAttributes: (state, atributos) => {
-  //   let alojamientos = state.alojamientos.data;
+  //   let gastronomicos = state.gastronomicos.data;
 
 
   // },
-  isError: state => state.alojamientos.error,
-  isLoading: state => state.alojamientos.isLoading,
+  isError: state => state.gastronomicos.error,
+  isLoading: state => state.gastronomicos.isLoading,
 };
 
-export const {success, failure, startLoading} = alojamientosSlice.actions;
+export const {success, failure, startLoading} = gastronomicosSlice.actions;
 export const {getAll, getOne, filterByNombre, isError, isLoading} = selectors;
 
-export default alojamientosSlice.reducer;
+export default gastronomicosSlice.reducer;

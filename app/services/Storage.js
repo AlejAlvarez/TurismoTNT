@@ -91,7 +91,6 @@ const syncGastronomicos = async () => {
     data: response.data.gastronomicos,
     expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
   });
-  console.log(response.data.gastronomicos);
   return response.data.gastronomicos;
 };
 

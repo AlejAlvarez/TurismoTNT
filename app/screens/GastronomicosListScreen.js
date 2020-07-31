@@ -1,6 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, FlatList } from 'react-native';
-import { SearchBar, Button, ListItem } from 'react-native-elements';
+import React, { useState } from 'react';
+import { View, ActivityIndicator, FlatList } from 'react-native';
+import { SearchBar, Button, ListItem, Text, Overlay } from 'react-native-elements';
+import RNPickerSelect from 'react-native-picker-select';
+import GastronomicosService from '@services/GastronomicosService';
+import LocalidadesService from '@services/LocalidadesService';
+import EspecialidadesService from '@services/EspecialidadesService';
+import ActividadesService from '@services/ActividadesService';
 import ListEmpty from '@components/ListEmpty';
 
 // APOLLO SERVER para crear el servidor
@@ -18,75 +23,61 @@ import ListEmpty from '@components/ListEmpty';
 // hay un gastronomico que no tiene localidade: para este caso poniendo {gastronomico.localidade?.nombre} se soluciona (nótese el ?)
 
 export default function GastronomicosListScreen({ navigation, route }) {
-  const [data, setData] = useState( [] );
-  const [gastronomicosListados, setGastronomicosListados] = useState( [] );
-  const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-
-  const { gastronomicosFiltrados } = route.params? route.params : [];
+    const [gastronomicosMeta] = GastronomicosService();
+    const [localidadesMeta] = LocalidadesService();
+    const [especialidadesMeta] = EspecialidadesService();
+    const [actividadesMeta] = ActividadesService();
+    const [search, setSearch] = useState("");
+    const [isVisibleOverlay, setIsVisibleOverlay] = useState(false);
+    const [localidad, setLocalidad] = useState(null);
+    const [actividad, setActividad] = useState(null);
+    const [especialidad, setEspecialidad] = useState(null);
   
-  const _getGastronomicos = () => {
-    setIsLoading(true);
-    global.storage.load({
-      key: 'gastronomicos',
-      autoSync: true,
-      syncInBackground: true
-    })
-    .then(ret => {
-      setData(ret);
-      setGastronomicosListados(ret);
-      setIsError(false);
-      setIsLoading(false);
-    })
-    .catch(err => {
-      console.warn(err.message);
-      setIsLoading(false);
-      setIsError(true);
-    });
+
+  const getGastronomicos = () => {
+    let gastronomicos = gastronomicosMeta.data;
+    if (localidad != null){
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
+    };
+    if (actividad != null){
+      const checkAct = (item) => item.actividade.id === actividad;
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.actividad_gastronomicos?.some(checkAct));
+    };
+    if (especialidad != null){
+      const checkEsp = (item) => item.especialidade.id === especialidad;
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidad_gastronomicos?.some(checkEsp));
+    };
+    if (search === ""){
+      return gastronomicos;
+    } else {
+      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
   };
 
-  useEffect(() => {
-    if (gastronomicosFiltrados){
-      setGastronomicosListados(gastronomicosFiltrados);
-    }
-    else{
-      const fetchData = async () => {
-        _getGastronomicos();
-      }
-      fetchData();
-    };
-  }, []);
-
-  const updateSearch = (text) => {
-    setSearch(text);
-    if (text === ""){
-      setGastronomicosListados(data);
-    } else {
-      setGastronomicosListados(data.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(text.toLowerCase())));
-    }
-  }
-
   return (
-    <View style={styles.container}>
-      {isLoading ? (
+    <View style={{ flex: 1 }}>
+      <SearchBar
+        round
+        placeholder="Filtrar por nombre..."  
+        onChangeText={(text) => setSearch(text)}
+        onClear={() => setSearch("")}
+        value={search}
+        lightTheme={true}
+        />
+      <Button
+        title="Configurar Filtros"
+        onPress={() => setIsVisibleOverlay(true)}
+        />
+      {gastronomicosMeta.isLoading ? (
         <ActivityIndicator style={{ flex: 1 }} animating size="large" />
-      ) : isError ? (
+      ) : gastronomicosMeta.isError ? (
         <Text>ERROR</Text>
       ) : (
       <View>
-        <SearchBar
-          round
-          placeholder="Filtrar por nombre..."  
-          onChangeText={text => updateSearch(text)}
-          onClear={() => updateSearch("")}
-          value={search}
-          lightTheme={true}
-        />
         <FlatList
           initialNumToRender={25}
           windowSize={10}
-          data={gastronomicosListados}
+          data={getGastronomicos()}
           ListEmptyComponent={ListEmpty}
           keyExtractor={({ id }, index) => id}
           renderItem={({ item }) => (
@@ -104,22 +95,57 @@ export default function GastronomicosListScreen({ navigation, route }) {
             />)}
           />
 
-          {/* {data.gastronomicos.forEach (gastronomico=>console.log(gastronomico.nombre))} */}
+          <Overlay
+          isVisible={isVisibleOverlay}
+          onBackdropPress={() => setIsVisibleOverlay(false)}
+          overlayStyle = {{height:400, width:300}}
+          >
+
+          <Text h4>Filtros</Text>
+
+          <Text>Selecione una Localidad</Text>
+          <RNPickerSelect
+              style={{width: '50%', backgroundColor: 'lightyellow'}}
+              onValueChange={(value) => {
+                  setLocalidad(value);
+              }}
+              items={localidadesMeta.data.map(localidad => ({label: localidad.nombre, value: localidad.id}))}
+              value={localidad}
+              placeholder={{label: "Todas", value: null}}
+          />
+          
+          <Text>Selecione una Actividad</Text>
+          <RNPickerSelect
+              style={{width: '50%', backgroundColor: 'lightyellow'}}
+              onValueChange={(value) => {
+                  setActividad(value);
+              }}
+              items={especialidadesMeta.data.map(especialidad => ({label: especialidad.nombre, value: especialidad.id}))}
+              value={actividad}
+              placeholder={{label: "Todas", value: null}}
+          />
+
+          <Text>Selecione una Especialidad</Text>
+          <RNPickerSelect
+              style={{width: '50%', backgroundColor: 'lightyellow'}}
+              onValueChange={(value) => {
+                  setEspecialidad(value);
+              }}
+              items={actividadesMeta.data.map(actividad => ({label: actividad.nombre, value: actividad.id}))}
+              value={especialidad}
+              placeholder={{label: "Todas", value: null}}
+          />
+
+          <Button
+              title="Aceptar"
+              onPress={() => {
+              setIsVisibleOverlay(false);
+              }}
+          />
+          
+          </Overlay>
       </View>
       )}
     </View>
   );
 };
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  line: {
-    padding: 10,
-    borderBottomColor: '#920747',
-    borderBottomWidth: 3,
-  },
-});
-

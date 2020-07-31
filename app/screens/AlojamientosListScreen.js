@@ -1,57 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, FlatList, ActivityIndicator } from 'react-native';
-import { SearchBar, Button, ListItem, Text } from 'react-native-elements';
+import { SearchBar, Button, ListItem, Text, Overlay } from 'react-native-elements';
+import RNPickerSelect from 'react-native-picker-select';
+import AlojamientosService from '@services/AlojamientosService';
+import LocalidadesService from '@services/LocalidadesService';
+import ClasificacionesService from '@services/ClasificacionesService';
+import CategoriasService from '@services/CategoriasService';
 import ListEmpty from '@components/ListEmpty';
 
-export default function AlojamientosListScreen({ navigation, route }) {
-  // Probar reemplazar useState de data con 'useState([])' en lugar del map que hice
-  const [data, setData] = useState( [] );
-  const [alojamientosListados, setAlojamientosListados] = useState( [] );
+export default function AlojamientosListScreen({ navigation }) {
+  const [alojamientosMeta] = AlojamientosService();
+  const [localidadesMeta] = LocalidadesService();
+  const [clasificacionesMeta] = ClasificacionesService();
+  const [categoriasMeta] = CategoriasService();
   const [search, setSearch] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isVisibleOverlay, setIsVisibleOverlay] = useState(false);
+  const [localidad, setLocalidad] = useState(null);
+  const [clasificacion, setClasificacion] = useState(null);
+  const [categoria, setCategoria] = useState(null);
 
-  const { alojamientosFiltrados } = route.params? route.params : [];
-
-  const _getAlojamientos = () => {
-    setIsLoading(true);
-    global.storage.load({
-      key: 'alojamientos',
-      autoSync: true,
-      syncInBackground: true
-    })
-    .then(ret => {
-      setData(ret);
-      setAlojamientosListados(ret);
-      setIsError(false);
-      setIsLoading(false);
-    })
-    .catch(err => {
-      console.warn(err.message);
-      setIsLoading(false);
-      setIsError(true);
-    });
-  };
-  
-  useEffect(() => {
-    if (alojamientosFiltrados){
-      setAlojamientosListados(alojamientosFiltrados);
-    }
-    else{
-      const fetchData = async () => {
-        _getAlojamientos();
-      }
-      fetchData();
+  const getAlojamientos = () => {
+    let alojamientos = alojamientosMeta.data;
+    if (localidad != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.localidad.id == localidad);
     };
-  }, []);
-
-  const updateSearch = (text) => {
-    setSearch(text);
-    if (text === ""){
-      setAlojamientosListados(data);
+    if (clasificacion != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.clasificacion.id == clasificacion);
+    };
+    if (categoria != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.categoria.id == categoria);
+    };
+    if (search === ""){
+      return alojamientos;
     } else {
-      setAlojamientosListados(data.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(text.toLowerCase())));
-    }
+      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
   };
 
   return (
@@ -59,48 +42,92 @@ export default function AlojamientosListScreen({ navigation, route }) {
       <SearchBar
         round
         placeholder="Filtrar por nombre..."  
-        onChangeText={(text) => updateSearch(text)}
-        onClear={() => updateSearch("")}
+        onChangeText={(text) => setSearch(text)}
+        onClear={() => setSearch("")}
         value={search}
         lightTheme={true}
       />
       <Button
         title="Configurar Filtros"
-        onPress={() => navigation.navigate('AlojamientosFilter')}
+        onPress={() => setIsVisibleOverlay(true)}
       />
-      {isLoading ? (
+      {alojamientosMeta.isLoading ? (
         <ActivityIndicator style={{ flex: 1 }} animating size="large" />
-      ) : isError ? (
+      ) : alojamientosMeta.isError ? (
         <Text>ERROR...</Text>
       ) : (
-        <FlatList
-          data={alojamientosListados}
-          keyExtractor={({ id }, index) => id}
-          renderItem={( {item} ) => (
-            <ListItem
-              title={item.nombre}
-              subtitle={item.domicilio}
-              leftAvatar={{ source: { uri: item.foto } }}
-              onPress={() => {
-                navigation.navigate('AlojamientoDetails', {
-                  item: item
-                })
-              }}
-              bottomDivider
-              chevron
+        <View>
+            <FlatList
+            data={getAlojamientos()}
+            keyExtractor={({ id }, index) => id}
+            renderItem={( {item} ) => (
+                <ListItem
+                title={item.nombre}
+                subtitle={item.domicilio}
+                leftAvatar={{ source: { uri: item.foto } }}
+                onPress={() => {
+                    navigation.navigate('AlojamientoDetails', {
+                    item: item
+                    })
+                }}
+                bottomDivider
+                chevron
+                />
+            )}
+            ListEmptyComponent={ListEmpty}
             />
-          )}
-          ListEmptyComponent={ListEmpty}
-        />
+
+            <Overlay
+            isVisible={isVisibleOverlay}
+            onBackdropPress={() => setIsVisibleOverlay(false)}
+            overlayStyle = {{height:400, width:300}}
+            >
+
+            <Text h4>Filtros</Text>
+
+            <Text>Selecione una Localidad</Text>
+            <RNPickerSelect
+                style={{width: '50%', backgroundColor: 'lightyellow'}}
+                onValueChange={(value) => {
+                    setLocalidad(value);
+                }}
+                items={localidadesMeta.data.map(localidad => ({label: localidad.nombre, value: localidad.id}))}
+                value={localidad}
+                placeholder={{label: "Todas", value: null}}
+            />
+            
+            <Text>Selecione una Clasificacion</Text>
+            <RNPickerSelect
+                style={{width: '50%', backgroundColor: 'lightyellow'}}
+                onValueChange={(value) => {
+                    setClasificacion(value);
+                }}
+                items={clasificacionesMeta.data.map(clasificacion => ({label: clasificacion.nombre, value: clasificacion.id}))}
+                value={clasificacion}
+                placeholder={{label: "Todas", value: null}}
+            />
+
+            <Text>Selecione una Categoria</Text>
+            <RNPickerSelect
+                style={{width: '50%', backgroundColor: 'lightyellow'}}
+                onValueChange={(value) => {
+                    setCategoria(value);
+                }}
+                items={categoriasMeta.data.map(categoria => ({label: categoria.estrellas, value: categoria.id}))}
+                value={categoria}
+                placeholder={{label: "Todas", value: null}}
+            />
+
+            <Button
+                title="Aceptar"
+                onPress={() => {
+                setIsVisibleOverlay(false);
+                }}
+            />
+            
+            </Overlay>
+        </View>
       )}
     </View>
   );
 }
-
-
-// else{
-//   // De esta manera reemplazamos los espacios por %20, para postgREST
-//   let encodedText = encodeURIComponent(text.trim())
-//   let endUrl = `.nombre=ilike.*${encodedText}*`
-//   setUrl(ALOJAMIENTOS_URL.concat(endUrl));
-// }
