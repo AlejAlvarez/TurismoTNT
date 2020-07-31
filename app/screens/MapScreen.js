@@ -98,7 +98,11 @@ export default function MapScreen({navigation}) {
     if (categoria != null){
         alojamientos = alojamientos.filter((alojamiento) => alojamiento.categoria.id == categoria);
     };
-    return alojamientos;
+    if (search === ""){
+      return alojamientos;
+    } else {
+      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
   };
 
   const getGastronomicos = () => {
@@ -114,7 +118,11 @@ export default function MapScreen({navigation}) {
       const checkEsp = (item) => item.especialidade.id === especialidad;
       gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidad_gastronomicos?.some(checkEsp));
     };
-    return gastronomicos;
+    if (search === ""){
+      return gastronomicos;
+    } else {
+      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
   };
 
   const getAlojamientosFav = () => {
