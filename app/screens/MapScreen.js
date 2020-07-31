@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import { Button, Text, Overlay } from 'react-native-elements';
+import { Button, Text, Overlay, SearchBar } from 'react-native-elements';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
@@ -13,6 +13,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RNPickerSelect from 'react-native-picker-select';
 import AlojamientosService from '@services/AlojamientosService';
 import GastronomicosService from '@services/GastronomicosService';
+import AlojamientosFavService from '@services/AlojamientosFavService';
+import GastronomicosFavService from '@services/GastronomicosFavService';
 import LocalidadesService from '@services/LocalidadesService';
 import ClasificacionesService from '@services/ClasificacionesService';
 import CategoriasService from '@services/CategoriasService';
@@ -68,6 +70,8 @@ export default function MapScreen({navigation}) {
   const [categoriasMeta] = CategoriasService();
   const [especialidadesMeta] = EspecialidadesService();
   const [actividadesMeta] = ActividadesService();
+  const [alojamientosFavMeta] = AlojamientosFavService();
+  const [gastronomicosFavMeta] = GastronomicosFavService();
   const [currentPosition, setCurrentPosition] = useState(initialPosition);
   const [item, setItem] = useState(null);
   const [activeMarker, setActiveMarker] = useState(false);
@@ -77,6 +81,10 @@ export default function MapScreen({navigation}) {
   const [categoria, setCategoria] = useState(null);
   const [actividad, setActividad] = useState(null);
   const [especialidad, setEspecialidad] = useState(null);
+  const [showFavoritos, setShowFavoritos] = useState(false);
+  const [alojamientosFav, setAlojamientosFav] = useState([]);
+  const [gastronomicosFav, setGastronomicosFav] = useState([]);
+  const [search, setSearch] = useState("");
 
 
   const getAlojamientos = () => {
@@ -109,10 +117,60 @@ export default function MapScreen({navigation}) {
     return gastronomicos;
   };
 
-  const verDetalles = item => {
-    setActiveMarker(false);
-    item.categoria? navigation.navigate('AlojamientoDetails', {item: item})
-      : navigation.navigate('GastronomicoDetails', {item: item});
+  const getAlojamientosFav = () => {
+    let alojamientos = alojamientosFav;
+    if (localidad != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.localidad.id == localidad);
+    };
+    if (clasificacion != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.clasificacion.id == clasificacion);
+    };
+    if (categoria != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.categoria.id == categoria);
+    };
+    if (search === ""){
+      return alojamientos;
+    } else {
+      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
+  };
+
+  const getGastronomicosFav = () => {
+    let gastronomicos = gastronomicosFav;
+    if (localidad != null){
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
+    };
+    if (actividad != null){
+      const checkAct = (item) => item.actividade.id === actividad;
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.actividad_gastronomicos?.some(checkAct));
+    };
+    if (especialidad != null){
+      const checkEsp = (item) => item.especialidade.id === especialidad;
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidad_gastronomicos?.some(checkEsp));
+    };
+    if (search === ""){
+      return gastronomicos;
+    } else {
+      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
+  };
+
+  const getAlojamientosFavService = async () => {
+    let arrayAlojamientosFav = await alojamientosFavMeta.getFavoritos();
+    return arrayAlojamientosFav;
+  };
+
+  const getGastronomicosFavService = async () => {
+    let arrayGastronomicosFav = await gastronomicosFavMeta.getFavoritos();
+    return arrayGastronomicosFav;
+  };
+  
+  const fetchFavoritos = async () =>{
+    let arrayAlojamientosFav = await getAlojamientosFavService();
+    let arrayGastronomicosFav = await getGastronomicosFavService();
+
+    setAlojamientosFav(arrayAlojamientosFav);
+    setGastronomicosFav(arrayGastronomicosFav);
   }
 
   useEffect(() => {
@@ -129,7 +187,15 @@ export default function MapScreen({navigation}) {
       error => alert(error.message),
       {timeout: 15000, maximumAge: 10000},
     );
+
+    fetchFavoritos();
   }, []);
+  
+  const verDetalles = item => {
+    setActiveMarker(false);
+    item.categoria? navigation.navigate('AlojamientoDetails', {item: item})
+      : navigation.navigate('GastronomicoDetails', {item: item});
+  }
 
   return (
     <View style={mapStyles.container}>
@@ -137,6 +203,63 @@ export default function MapScreen({navigation}) {
         <ActivityIndicator style={{flex: 1}} animating size="large" />
       ) : (alojamientosMeta.isError || gastronomicosMeta.isError) ? (
         <Text>Error...</Text>
+      ) : showFavoritos ? (
+        <MapView
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={mapStyles.map}
+          showsUserLocation
+          initialRegion={currentPosition}>
+          {getAlojamientosFav().map(item => (
+            <Marker
+              coordinate={{
+                latitude: item.lat,
+                longitude: item.lng,
+              }}
+              onPress={event => {
+                event.stopPropagation();
+                setActiveMarker(true);
+                setItem(item);
+              }}>
+              <View
+                style={{
+                  backgroundColor: Colors.LIGHTGREEN,
+                  padding: 5,
+                  borderRadius: 10,
+                  elevation: 3,
+                  shadowRadius: 2,
+                  shadowColor: 'black',
+                  shadowOffset: {width: 10, height: 10},
+                }}>
+                <Icon name="hotel" size={15} color="white" />
+              </View>
+            </Marker>
+          ))}
+          {getGastronomicosFav().map(gastronomico => (
+            <Marker
+              coordinate={{
+                latitude: gastronomico.lat,
+                longitude: gastronomico.lng,
+              }}
+              onPress={event => {
+                event.stopPropagation();
+                setActiveMarker(true);
+                setItem(gastronomico);
+              }}>
+              <View
+                style={{
+                  backgroundColor: Colors.GOLD,
+                  padding: 5,
+                  borderRadius: 10,
+                  elevation: 3,
+                  shadowRadius: 2,
+                  shadowColor: 'black',
+                  shadowOffset: {width: 10, height: 10},
+                }}>
+                <Icon name="food-fork-drink" size={15} color="white" />
+              </View>
+            </Marker>
+          ))}
+        </MapView> 
       ) : (
         <MapView
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
@@ -193,8 +316,7 @@ export default function MapScreen({navigation}) {
               </View>
             </Marker>
           ))}
-        </MapView> 
-      )}
+        </MapView>)}
       <TouchableOpacity
         style={mapStyles.filterBtn}
         onPress={() => setIsVisibleOverlay(true)}>
@@ -202,6 +324,11 @@ export default function MapScreen({navigation}) {
             name="magnify"
             size={30}
           />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={mapStyles.favBtn}
+        onPress={() => setShowFavoritos(!showFavoritos)}>
+        {showFavoritos ? <Icon name="heart" size={30} /> : <Icon name="heart-outline" size={30} />}
       </TouchableOpacity>
       <Overlay
         isVisible={activeMarker}
@@ -233,9 +360,18 @@ export default function MapScreen({navigation}) {
       <Overlay
           isVisible={isVisibleOverlay}
           onBackdropPress={() => setIsVisibleOverlay(false)}
-          overlayStyle = {{height:520, width:300}}>
+          overlayStyle = {{height:600, width:300}}>
           <Text h3>Filtros</Text>
-          <Text>Selecione una Localidad</Text>
+          <SearchBar
+            round
+            placeholder="Filtrar por nombre..."  
+            onChangeText={(text) => setSearch(text)}
+            onClear={() => setSearch("")}
+            value={search}
+            lightTheme={true}
+            style={{paddingBottom: 5}}
+          />
+          <Text h4>Localidad</Text>
           <RNPickerSelect
               style={{width: '50%', backgroundColor: 'lightyellow'}}
               onValueChange={(value) => {
@@ -286,7 +422,8 @@ export default function MapScreen({navigation}) {
             title="Aceptar"
             onPress={() => {
             setIsVisibleOverlay(false);
-            }}/>
+            }}
+            style={{marginTop:10}}/>
       </Overlay>
     </View>
   );

@@ -103,6 +103,15 @@ const mapStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent:'center',
     },
+    favBtn : {
+        position: 'absolute',
+        width:50, height:50,
+        backgroundColor: Colors.WHITE,
+        borderRadius:30,
+        bottom:80,right:20,
+        alignItems: 'center',
+        justifyContent:'center',
+    },
    });
 
 // Styles para la Details View

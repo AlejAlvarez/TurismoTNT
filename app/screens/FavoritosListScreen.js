@@ -11,45 +11,57 @@ export default function FavoritosListScreen({ navigation }) {
   const [alojamientosFavMeta] = AlojamientosFavService();
   const [gastronomicosFavMeta] = GastronomicosFavService();
   const [localidadesMeta] = LocalidadesService();
-  const [favoritos, setFavoritos] = useState([]);
+  const [alojamientosFav, setAlojamientosFav] = useState([]);
+  const [gastronomicosFav, setGastronomicosFav] = useState([]);
   const [search, setSearch] = useState("");
   const [isVisibleOverlay, setIsVisibleOverlay] = useState(false);
   const [localidad, setLocalidad] = useState(null);
 
-  const getAlojamientosFav = async () => {
+  const getAlojamientosFavService = async () => {
     let arrayAlojamientosFav = await alojamientosFavMeta.getFavoritos();
     return arrayAlojamientosFav;
   };
 
-  const getGastronomicosFav = async () => {
+  const getGastronomicosFavService = async () => {
     let arrayGastronomicosFav = await gastronomicosFavMeta.getFavoritos();
     return arrayGastronomicosFav;
   };
 
   const fetchFavoritos = async () =>{
-    let arrayAlojamientosFav = await getAlojamientosFav();
-    let arrayGastronomicosFav = await getGastronomicosFav();
+    let arrayAlojamientosFav = await getAlojamientosFavService();
+    let arrayGastronomicosFav = await getGastronomicosFavService();
 
-    setFavoritos([...arrayAlojamientosFav, ...arrayGastronomicosFav]);
+    setAlojamientosFav(arrayAlojamientosFav);
+    setGastronomicosFav(arrayGastronomicosFav);
   }
 
   useEffect(() => {
       fetchFavoritos()
-  }, []);
+  });
 
-  const getFavoritos = () =>{
-      let arrayFavoritos = favoritos;
-      if (localidad != null){
-        arrayFavoritos = arrayFavoritos.filter(favorito => 
-            favorito.categoria? 
-                favorito.localidad.id == localidad : favorito.localidade?.id == localidad
-        );
-      };
-      if (search === ""){
-        return arrayFavoritos;
-      } else {
-        return arrayFavoritos.filter((favorito) => favorito.nombre.toLowerCase().includes(search.toLowerCase()));    
-      };
+
+  const getAlojamientosFav = () => {
+    let alojamientos = alojamientosFav;
+    if (localidad != null){
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.localidad.id == localidad);
+    };
+    if (search === ""){
+      return alojamientos;
+    } else {
+      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
+  };
+
+  const getGastronomicosFav = () => {
+    let gastronomicos = gastronomicosFav;
+    if (localidad != null){
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
+    };
+    if (search === ""){
+      return gastronomicos;
+    } else {
+      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
+    };
   };
 
   const verDetalles = item => {
@@ -74,7 +86,7 @@ export default function FavoritosListScreen({ navigation }) {
       />
         <View>
             <FlatList
-            data={getFavoritos()}
+            data={[...getAlojamientosFav(), ...getGastronomicosFav()]}
             keyExtractor={({ id }, index) => id}
             renderItem={( {item} ) => (
                 <ListItem
