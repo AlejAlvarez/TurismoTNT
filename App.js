@@ -3,7 +3,8 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeStackNavigator from '@navigation/HomeStackNavigator';
 import FavoritosStackNavigator from '@navigation/FavoritosStackNavigator';
-import ProfileScreen from '@screens/ProfileScreen';
+import ProfileStackNavigator from '@navigation/ProfileStackNavigator';
+import LoginScreen from '@screens/LoginScreen';
 import TestsScreen from '@screens/TestsScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavigationContainer } from '@react-navigation/native';
@@ -55,10 +56,10 @@ function App(){
                   ),
             }}/>
             <Tab.Screen
-            name="Tests"  // Esto antes era ProfileScreen 
-            component={TestsScreen}
+            name="Perfil"  // Esto antes era ProfileScreen 
+            component={ProfileStackNavigator}
             options={{
-                tabBarLabel:"Tests",
+                tabBarLabel:"Perfil",
                 tabBarIcon: ({ color, size, focused }) => (
                     <MaterialCommunityIcons name="account" color={color} size={focused? 31: size} />
                   ),

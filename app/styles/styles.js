@@ -12,21 +12,6 @@ const splashStyle = StyleSheet.create({
     }
 });
 
-// Estilos para LoginScreen
-const loginStyles = StyleSheet.create({
-
-    container : {
-        flex: 1,
-        alignItems: 'center',
-    },
-
-    logo: {
-        paddingTop: 50,
-        alignItems: 'center',
-    },
-
-});
-
 // Estilos para HomeScreen
 const homeScreenStyles = StyleSheet.create({
     rowView : {
@@ -211,4 +196,30 @@ const recuerdosScreenStyles = StyleSheet.create({
     },
   });
 
-export { splashStyle, loginStyles, homeScreenStyles, homeCardStyles, mapStyles, detailsScreenStyles, recuerdosScreenStyles };
+  /*
+const loginScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingTop: 120,
+  }
+});
+
+const styles = StyleSheet.create({
+  button: {
+    width: '100%',
+    padding: 20,
+    backgroundColor: Colors.AQUABLUE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+  text: {
+    color: Colors.WHITE,
+    fontWeight: '500',
+    fontSize: 16,
+  }
+});
+*/
+
+export { splashStyle, homeScreenStyles, homeCardStyles, mapStyles, detailsScreenStyles, recuerdosScreenStyles };

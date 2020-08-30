@@ -7,6 +7,7 @@ export default {
     LIGHTGREEN: '#3bd396',
     GOLD: '#F6AE2D',
     GRAY: '#757780',
+    LIGHTGRAY: '#C2C2C2',
     ORANGE: '#E08C1D',
     
 };

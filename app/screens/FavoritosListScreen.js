@@ -6,6 +6,7 @@ import AlojamientosFavService from '@services/AlojamientosFavService';
 import GastronomicosFavService from '@services/GastronomicosFavService';
 import LocalidadesService from '@services/LocalidadesService';
 import ListEmpty from '@components/ListEmpty';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function FavoritosListScreen({ navigation }) {
   const [alojamientosFavMeta] = AlojamientosFavService();
@@ -35,9 +36,12 @@ export default function FavoritosListScreen({ navigation }) {
     setGastronomicosFav(arrayGastronomicosFav);
   }
 
-  useEffect(() => {
-      fetchFavoritos()
-  });
+  useEffect(() => {    
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchFavoritos();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
 
   const getAlojamientosFav = () => {
