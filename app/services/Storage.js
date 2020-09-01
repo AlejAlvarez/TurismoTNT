@@ -1,85 +1,181 @@
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-community/async-storage';
-import axios from 'axios';
 import ApolloClient from 'apollo-boost';
 import { gql } from 'apollo-boost';
 import DEFAULT_IP from '@resources/IPConfig';
 
-const ALOJAMIENTOS_URL = `http://${DEFAULT_IP}:3000/alojamientos?select=id,nombre,domicilio,lat,lng,foto,clasificacion:clasificaciones(id,nombre),categoria:categorias(id,estrellas,valor),localidad:localidades(id,nombre)`;
 
-const GASTRONOMICOS_QUERY = gql `
-query MyQuery {
-  gastronomicos {
-    domicilio
-    foto
+const ALOJAMIENTOS_QUERY = gql `
+query AlojamientosQuery {
+  alojamientos {
     id
-    lat
-    lng
-    localidade {
+    comercio {
       id
       nombre
-    }
-    nombre
-    actividad_gastronomicos {
-      actividade {
+      domicilio
+      foto
+      lat
+      lng
+      localidad {
         id
         nombre
       }
     }
-    especialidad_gastronomicos {
-      especialidade {
+    categoria {
+      id
+      estrellas
+      valor
+    }
+    clasificacion {
+      id
+      nombre
+    }
+  }
+}
+`;
+
+const GASTRONOMICOS_QUERY = gql `
+query GastronomicosQuery {
+  gastronomicos {
+    id
+    comercio {
+      id
+      nombre
+      domicilio
+      foto
+      lat
+      lng
+      localidad {
+        id
+        nombre
+      }
+    }
+    especialidades_gastronomico {
+      especialidad {
+        id
+        nombre
+      }
+    }
+    actividades_gastronomico {
+      actividad {
         id
         nombre
       }
     }
   }
 }
-`
+`;
+
+const LOCALIDADES_QUERY = gql `
+query LocalidadesQuery {
+  localidades {
+    nombre
+    id
+  }
+}
+`;
+
+const CLASIFICACIONES_QUERY = gql `
+query ClasificacionesQuery {
+  clasificaciones {
+    nombre
+    id
+  }
+}
+`;
+
+const CATEGORIAS_QUERY = gql `
+query CategoriasQuery {
+  categorias {
+    estrellas
+    id
+    valor
+  }
+}
+`;
+
+const ESPECIALIDADES_QUERY = gql `
+query EspecialidadesQuery {
+  especialidades {
+    id
+    nombre
+  }
+}
+`;
+
+const ACTIVIDADES_QUERY = gql `
+query ActividadesQuery {
+  actividades {
+    id
+    nombre
+  }
+}
+`;
 
 const client = new ApolloClient({
   uri: `http://${DEFAULT_IP}:8080/v1/graphql`,
 });
 
-// AlojamientosService.js
-// export function syncAlojamientos
-const syncAlojamientos = async () => {
-  const response = await axios.get(ALOJAMIENTOS_URL);
+/*
+const syncComercios = async () =>{
+  const response = await client.query({
+    query: COMERCIOS_QUERY
+  });
   global.storage.save({
-    key: 'alojamientos',
-    data: response.data,
+    key: 'alojamiento',
+    data: response.data.alojamiento,
     expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
   });
-  return response.data;
+  return response.data.alojamiento;  
+}
+*/
+
+const syncAlojamientos = async () => {
+  const response = await client.query({
+    query: ALOJAMIENTOS_QUERY
+  });
+  global.storage.save({
+    key: 'alojamientos',
+    data: response.data.alojamientos,
+    expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
+  });
+  return response.data.alojamientos;
 };
 
 const syncLocalidades = async () => {
-  const response = await axios.get(`http://${DEFAULT_IP}:3000/localidades`);
+  const response = await client.query({
+    query: LOCALIDADES_QUERY
+  });
   global.storage.save({
     key: 'localidades',
-    data: response.data,
+    data: response.data.localidades,
     expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
   });
-  return response.data;
+  return response.data.localidades;
 };
 
 const syncClasificaciones = async () => {
-  const response = await axios.get(`http://${DEFAULT_IP}:3000/clasificaciones`);
+  const response = await client.query({
+    query: CLASIFICACIONES_QUERY
+  });
   global.storage.save({
     key: 'clasificaciones',
-    data: response.data,
+    data: response.data.clasificaciones,
     expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
   });
-  return response.data;
+  return response.data.clasificaciones;
 };
 
 const syncCategorias = async () => {
-  const response = await axios.get(`http://${DEFAULT_IP}:3000/categorias`);
+  const response = await client.query({
+    query: CATEGORIAS_QUERY
+  });
   global.storage.save({
     key: 'categorias',
-    data: response.data,
+    data: response.data.categorias,
     expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
   });
-  return response.data;
+  return response.data.categorias;
 };
 
 const syncGastronomicos = async () => {
@@ -96,13 +192,7 @@ const syncGastronomicos = async () => {
 
 const syncEspecialidades = async () => {
   const response = await client.query({
-    query: gql `
-      query MyQuery {
-        especialidades {
-          id
-          nombre
-        }
-      }`
+    query: ESPECIALIDADES_QUERY
   });
   global.storage.save({
     key: 'especialidades',
@@ -114,13 +204,7 @@ const syncEspecialidades = async () => {
 
 const syncActividades = async () => {
   const response = await client.query({
-    query: gql `
-      query MyQuery {
-        actividades {
-          id
-          nombre
-        }
-      }`
+    query: ACTIVIDADES_QUERY
   });
   global.storage.save({
     key: 'actividades',
@@ -128,6 +212,18 @@ const syncActividades = async () => {
     expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
   });
   return response.data.actividades;
+};
+
+const syncUsuarios = async () => {
+  const response = await client.query({
+    query: USUARIOS_QUERY
+  });
+  global.storage.save({
+    key: 'usuarios',
+    data: response.data.usuarios,
+    expires: 1000 * 60 * 60 * 24, // 1 day (1000 * 3600 * 24 milliseconds).
+  });
+  return response.data.usuarios;
 };
 
 const initStorage = () => {
@@ -150,6 +246,7 @@ const initStorage = () => {
     // the corresponding sync method will be invoked returning
     // the latest data.
     sync: {
+      //comercios: syncComercios,
       alojamientos: syncAlojamientos,
       localidades: syncLocalidades,
       clasificaciones: syncClasificaciones,
@@ -157,6 +254,7 @@ const initStorage = () => {
       gastronomicos: syncGastronomicos,
       especialidades: syncEspecialidades,
       actividades: syncActividades,
+      usuarios: syncUsuarios,
     },
   });
 };

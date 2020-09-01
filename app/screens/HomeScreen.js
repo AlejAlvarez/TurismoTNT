@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Divider, Text, Image } from 'react-native-elements';
+import { Divider, Text } from 'react-native-elements';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { homeScreenStyles as Style } from '@styles/styles';
 import HomeButtonCard from '@components/HomeButtonCard';
@@ -31,8 +31,8 @@ export default function HomeScreen({ navigation }) {
                 <HomeButtonCard  icon='map' text='Mapa' />
             </TouchableOpacity>
             <TouchableOpacity
-                onPress={() => navigation.navigate('Search')}>
-                <HomeButtonCard  icon='search' text='Buscar' />
+                onPress={() => navigation.navigate('Chat')}>
+                <HomeButtonCard  icon='chat' text='Chat' />
             </TouchableOpacity>
           </View>
         </View>

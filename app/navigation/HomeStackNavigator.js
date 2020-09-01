@@ -8,7 +8,7 @@ import AlojamientosListScreen from '@screens/AlojamientosListScreen';
 import AlojamientoDetailsScreen from '@screens/AlojamientoDetailsScreen';
 import RecuerdosAlojamientoScreen from '@screens/RecuerdosAlojamientoScreen';
 import MapScreen from '@screens/MapScreen';
-import SearchScreen from '@screens/SearchScreen';
+import ChatScreen from '@screens/ChatScreen';
 import TurAppHeader from '@components/TurAppHeader';
 
 const Stack = createStackNavigator();
@@ -48,8 +48,8 @@ export default function HomeStackNavigator(){
                 name="Mapa"
                 component={MapScreen} />
             <Stack.Screen
-                name="Search"
-                component={SearchScreen} />
+                name="Chat"
+                component={ChatScreen} />
         </Stack.Navigator>
     );
 }
