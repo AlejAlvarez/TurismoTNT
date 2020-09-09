@@ -81,10 +81,11 @@ export default function UsuarioService() {
       query: gql `
         query GetUsuarioForLogin {
             usuarios(where: {email: {_eq: "${email}"}, password: {_eq: "${password}"}}) {
+            id
             nombre
             apellido
             email
-            id
+            password
           }
         }
       `
@@ -109,10 +110,11 @@ export default function UsuarioService() {
             _set: {nombre: "${nombre}", apellido: "${apellido}", password: "${password}"}) {
               affected_rows
               returning {
+                id
                 nombre
                 apellido
                 email
-                id
+                password
               }
           }
         }
@@ -149,10 +151,11 @@ export default function UsuarioService() {
           update_usuarios(where: {email: {_eq: "${email}"}}, _set: {email: "${nuevoEmail}"}) {
             affected_rows
             returning {
+              id
               nombre
               apellido
               email
-              id
+              password
             }
           }
         }

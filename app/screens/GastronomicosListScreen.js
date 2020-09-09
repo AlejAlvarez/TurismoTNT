@@ -37,20 +37,20 @@ export default function GastronomicosListScreen({ navigation, route }) {
   const getGastronomicos = () => {
     let gastronomicos = gastronomicosMeta.data;
     if (localidad != null){
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.comercio.localidad?.id == localidad);
     };
     if (actividad != null){
-      const checkAct = (item) => item.actividade.id === actividad;
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.actividad_gastronomicos?.some(checkAct));
+      const checkAct = (elem) => elem.actividad.id === actividad;
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.actividades_gastronomico?.some(checkAct));
     };
     if (especialidad != null){
-      const checkEsp = (item) => item.especialidade.id === especialidad;
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidad_gastronomicos?.some(checkEsp));
+      const checkEsp = (elem) => elem.especialidad.id === especialidad;
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidades_gastronomico?.some(checkEsp));
     };
     if (search === ""){
       return gastronomicos;
     } else {
-      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
+      return gastronomicos.filter((gastronomico) => gastronomico.comercio.nombre.toLowerCase().includes(search.toLowerCase()));    
     };
   };
 
@@ -82,9 +82,9 @@ export default function GastronomicosListScreen({ navigation, route }) {
           keyExtractor={({ id }, index) => id}
           renderItem={({ item }) => (
             <ListItem
-              title={item.nombre}
-              subtitle={item.domicilio}
-              leftAvatar={{ source: { uri: item.foto } }}
+              title={item.comercio.nombre}
+              subtitle={item.comercio.domicilio}
+              leftAvatar={{ source: { uri: item.comercio.foto } }}
               onPress={() => {
                 navigation.navigate('GastronomicoDetails', {
                   item: item

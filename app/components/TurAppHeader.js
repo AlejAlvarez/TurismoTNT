@@ -6,6 +6,7 @@ export default function TurAppHeader () {
     return (
     <Header 
         backgroundColor= {colors.WHITE}
+        style={{height: 50}}
         centerComponent= {<Image
             source={require('@resources/images/TurApp-logo.png')}
             style={{ height:42, width:125 }}

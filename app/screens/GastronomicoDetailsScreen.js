@@ -1,45 +1,90 @@
 import React, {useState, useEffect} from 'react';
 import {View, ScrollView, ActivityIndicator, TouchableOpacity} from 'react-native';
-import {Image, Text, Divider} from 'react-native-elements';
+import {Image, Text} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {mapStyles, detailsScreenStyles} from '@styles/styles';
 import GastronomicosFavService from '@services/GastronomicosFavService';
+import CalificacionesService from '@services/CalificacionesService';
 import Colors from '@styles/colors';
+import IconButton from '@components/IconButton';
 
-export default function GastronomicoDetailsScreen({ navigation, route }) {
-  const { item } = route.params;
+export default function GastronomicoDetailsScreen({navigation, route}) {
+  const {item} = route.params;
   const [esFavorito, setEsFavorito] = useState(false);
+  const [calificaciones, setCalificaciones] = useState([])
   const [gastronomicosFavMeta] = GastronomicosFavService();
+  const [calificacionesMeta] = CalificacionesService();
 
   const checkFav = async () => {
-    let valor = await gastronomicosFavMeta.esFavorito(item); 
+    let valor = await gastronomicosFavMeta.esFavorito(item);
     setEsFavorito(valor);
   };
+  
+  const countCalificaciones = async () =>{
+    let response = [];
+    response[0] = await calificacionesMeta.countByComercioYCalificacion(item.comercio.id, 1);
+    response[1] = await calificacionesMeta.countByComercioYCalificacion(item.comercio.id, 2);
+    response[2] = await calificacionesMeta.countByComercioYCalificacion(item.comercio.id, 3);
+    setCalificaciones(response);
+  }
 
   useEffect(() => {
     checkFav();
+    countCalificaciones();
   }, []);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        esFavorito ? (
+          <IconButton
+            iconName="heart"
+            iconSize={34}
+            style={detailsScreenStyles.favBtn}
+            onPress={() => {
+              gastronomicosFavMeta.eliminarFavorito(item);
+              setEsFavorito(false);
+            }}
+          />
+        ) : (
+          <IconButton
+            iconName="heart-outline"
+            iconSize={34}
+            style={detailsScreenStyles.favBtn}
+            onPress={() => {
+              gastronomicosFavMeta.agregarFavorito(item);
+              setEsFavorito(true);
+            }}
+          />
+        ),
+    });
+  }, [navigation, esFavorito]);
 
   const _renderActividades = () => {
     let myloop = [];
 
-    item.actividad_gastronomicos.forEach(actividad_gastronomico => {
+    item.actividades_gastronomico.forEach(actividad_gastronomico => {
       myloop.push(
-        <Text style={{color: Colors.GREEN}}> -{actividad_gastronomico.actividade.nombre}- </Text>
+        <Text style={{color: Colors.GREEN}}>
+          {' '}
+          -{actividad_gastronomico.actividad.nombre}-{' '}
+        </Text>,
       );
     });
 
     return myloop;
-
   };
 
   const _renderEspecialidades = () => {
     let myloop = [];
 
-    item.especialidad_gastronomicos.forEach(especialidad_gastronomico => {
+    item.especialidades_gastronomico.forEach(especialidad_gastronomico => {
       myloop.push(
-        <Text style={{color: Colors.ORANGE}}> -{especialidad_gastronomico.especialidade.nombre}- </Text>
+        <Text style={{color: Colors.ORANGE}}>
+          {' '}
+          -{especialidad_gastronomico.especialidad.nombre}-{' '}
+        </Text>,
       );
     });
 
@@ -48,80 +93,92 @@ export default function GastronomicoDetailsScreen({ navigation, route }) {
 
   return (
     <ScrollView>
-      <View style={{ flex: 1 }}>
-          <View style={detailsScreenStyles.container}>
-            { item.foto ? (
-              <Image
-                source={{ uri: item.foto }}
-                style={{ width:350, height:200 }}
-                PlaceholderContent={<ActivityIndicator />}
-              />) : (
-              <Image
-                source={require('@resources/images/sin-foto.jpg')}
-                style={{ width:350, height:200 }}
-                PlaceholderContent={<ActivityIndicator />}              
-              />
-            )}
-            <Text h3 style={{padding: 10}}>{item.nombre}</Text>
-            <Text>Actividades: </Text>
-            <View style={detailsScreenStyles.subContainer}>
-              {_renderActividades()}
-            </View>
-            <Text>Especialidades: </Text>
-            <View style={detailsScreenStyles.subContainer}>
-              {_renderEspecialidades()}
-            </View>
-            <TouchableOpacity
-              style={detailsScreenStyles.favBtn}
-              onPress={() => {
-                if(esFavorito){
-                  gastronomicosFavMeta.eliminarFavorito(item);
-                  setEsFavorito(false);
-                }else{
-                  gastronomicosFavMeta.agregarFavorito(item);
-                  setEsFavorito(true);
-                }
-              }}>
-              {esFavorito ? <Icon name="heart" size={30} /> : <Icon name="heart-outline" size={30} />}
-            </TouchableOpacity>
-            <Text style={{paddingTop: 15}}>
-              {item.domicilio} - {item.localidade?.nombre}
-            </Text>
-            <View style={mapStyles.smallContainer}>
-              <MapView 
-                  provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-                  style={mapStyles.map}
-                  scrollEnabled={false}
-                  zoomEnabled={false}
-                  zoomControlEnabled={false}
-                  minZoomLevel={13}
-                  region={{
-                    latitude: item.lat,
-                    longitude: item.lng,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}>
-                    <Marker
-                    coordinate={{
-                      latitude:item.lat,
-                      longitude:item.lng
-                    }}>
-                      <View style={{ backgroundColor: Colors.GOLD, padding: 5, borderRadius: 10, elevation: 3, shadowRadius: 2, shadowColor: 'black', shadowOffset: { width: 10, height: 10 } }}>
-                        <Icon name="food-fork-drink" size={20} color="white" />
-                      </View>
-                    </Marker>
-                </MapView>
-            </View>
+      <View style={{flex: 1}}>
+        <View style={detailsScreenStyles.container}>
+          {item.comercio.foto ? (
+            <Image
+              source={{uri: item.comercio.foto}}
+              style={detailsScreenStyles.mainImage}
+              PlaceholderContent={<ActivityIndicator />}
+            />
+          ) : (
+            <Image
+              source={require('@resources/images/sin-foto.jpg')}
+              style={detailsScreenStyles.mainImage}
+              PlaceholderContent={<ActivityIndicator />}
+            />
+          )}
+          {esFavorito && (
+            <IconButton
+              iconName="plus"
+              iconSize={30}
+              style={detailsScreenStyles.addRecuerdoBtn}
+              onPress={() =>
+                navigation.navigate('RecuerdosGastronomico', {item: item})
+              }
+            />
+          )}
+          <Text h3 style={detailsScreenStyles.title}>
+            {item.comercio.nombre}
+          </Text>
+          <Text style={detailsScreenStyles.subTitle}>Actividades: </Text>
+          <View style={detailsScreenStyles.subContainer}>
+            {_renderActividades()}
           </View>
-        {esFavorito && 
-        <View style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 10 }}>
-          <TouchableOpacity 
-            style={detailsScreenStyles.button}
-            onPress={() => navigation.navigate('RecuerdosGastronomico', { item: item })}>
-            <Text style={detailsScreenStyles.buttonText}>* Ver Recuerdos *</Text>
-          </TouchableOpacity>
-        </View>}
-      </View>      
+          <Text style={detailsScreenStyles.subTitle}>Especialidades: </Text>
+          <View style={detailsScreenStyles.subContainer}>
+            {_renderEspecialidades()}
+          </View>
+          <Text style={detailsScreenStyles.direccion}>
+            {item.comercio.domicilio} - {item.comercio.localidad?.nombre}
+          </Text>
+          <View style={mapStyles.smallContainer}>
+            <MapView
+              provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+              style={mapStyles.map}
+              scrollEnabled={false}
+              zoomEnabled={false}
+              zoomControlEnabled={false}
+              minZoomLevel={13}
+              region={{
+                latitude: item.comercio.lat,
+                longitude: item.comercio.lng,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}>
+              <Marker
+                coordinate={{
+                  latitude: item.comercio.lat,
+                  longitude: item.comercio.lng,
+                }}>
+                <View
+                  style={detailsScreenStyles.marker, {backgroundColor: Colors.GOLD}}>
+                  <Icon name="food-fork-drink" size={20} color="white" />
+                </View>
+              </Marker>
+            </MapView>
+          </View>
+          <View style={{marginTop: 10}}>
+            <Text style={{fontWeight: 'bold', fontSize: 16, textAlign: 'center', margin: 10}}>Calificaciones: </Text>
+            <TouchableOpacity style={{margin: 5, alignItems: 'flex-start', justifyContent:'center'}}
+              onPress={() => navigation.navigate('Calificaciones', {item: item})}>
+              <View style={{flexDirection: 'row', margin: 5}}>
+                <Icon name="emoticon-happy-outline" size={30} color={Colors.LIGHTGREEN} />
+                  <Text style={{margin: 5}}>Buenas: {calificaciones[0]}</Text>
+              </View>
+              <View style={{flexDirection: 'row', margin: 5}}>
+                <Icon name="emoticon-neutral-outline" size={30} color={Colors.GOLD} />
+                  <Text style={{margin: 5}}>Medio: {calificaciones[1]}</Text>
+              </View>
+              <View style={{flexDirection: 'row', margin: 5}}>
+                <Icon name="emoticon-sad-outline" size={30} color={Colors.RED} />
+                  <Text style={{margin: 5}}>Malas: {calificaciones[2]}</Text>
+              </View>
+              <Text style={{marginTop: 5, alignSelf: 'center', color: Colors.SKYBLUE}}>Ver más</Text>
+            </TouchableOpacity>
+          </View>          
+        </View>
+      </View>
     </ScrollView>
   );
 }

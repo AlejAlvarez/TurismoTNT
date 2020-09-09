@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
-import {StyleSheet, KeyboardAvoidingView, ScrollView, Alert} from 'react-native';
+import {KeyboardAvoidingView, ScrollView, Alert} from 'react-native';
 import UsuarioService from '@services/UsuarioService';
 import Heading from '@components/Heading';
 import Input from '@components/Input';
 import FilledButton from '@components/FilledButton';
 import TextButton from '@components/TextButton';
+import Colors from '@styles/colors';
+import {loginScreenStyles} from '@styles/styles';
 
 export default function LoginScreen({navigation}) {
   const [usuarioMeta] = UsuarioService();
@@ -23,17 +25,17 @@ export default function LoginScreen({navigation}) {
 
   return (
     <ScrollView>
-      <KeyboardAvoidingView behavior={'height'} style={styles.container}>
-        <Heading style={styles.title}>IDENTIFICARSE</Heading>
+      <KeyboardAvoidingView behavior={'height'} style={loginScreenStyles.container}>
+        <Heading style={loginScreenStyles.title}>IDENTIFICARSE</Heading>
         <Input
-          style={styles.input}
+          style={loginScreenStyles.input}
           value={email}
           onChangeText={text => setEmail(text)}
           placeholder={'Email'}
           keyboardType={'email-address'}
         />
         <Input
-          style={styles.input}
+          style={loginScreenStyles.input}
           value={password}
           onChangeText={text => setPassword(text)}
           placeholder={'Contraseña'}
@@ -41,7 +43,7 @@ export default function LoginScreen({navigation}) {
         />
         <FilledButton
           title={'Iniciar Sesión'}
-          style={styles.loginButton}
+          style={loginScreenStyles.loginButton}
           onPress={() => {
             handleLogin();
             //console.log(email, password);
@@ -49,7 +51,8 @@ export default function LoginScreen({navigation}) {
         />
         <TextButton
           title={'No tiene una cuenta? Regístrese'}
-          style={styles.registerButton}
+          style={loginScreenStyles.registerButton}
+          textStyle={{color: Colors.SKYBLUE}}
           onPress={() => {
             navigation.navigate('Register');
           }}
@@ -59,22 +62,3 @@ export default function LoginScreen({navigation}) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 40,
-    alignItems: 'center',
-  },
-  title: {
-    marginBottom: 26,
-  },
-  input: {
-    marginVertical: 10,
-  },
-  loginButton: {
-    marginVertical: 30,
-  },
-  registerButton: {
-    marginVertical: 0,
-  },
-});

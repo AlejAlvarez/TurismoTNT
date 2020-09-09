@@ -4,16 +4,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeStackNavigator from '@navigation/HomeStackNavigator';
 import FavoritosStackNavigator from '@navigation/FavoritosStackNavigator';
 import ProfileStackNavigator from '@navigation/ProfileStackNavigator';
-import LoginScreen from '@screens/LoginScreen';
-import TestsScreen from '@screens/TestsScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavigationContainer } from '@react-navigation/native';
 import { initStorage } from '@services/Storage';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
-import AlojamientosReducer from '@redux/AlojamientosSlice';
-import GastronomicosReducer from '@redux/GastronomicosSlice';
-import FiltrosReducer from '@redux/FiltrosSlice';
 import UserContext from '@context/UserContext';
 
 initStorage();

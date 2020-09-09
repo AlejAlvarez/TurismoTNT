@@ -4,6 +4,7 @@ import UsuarioService from '@services/UsuarioService';
 import Heading from '@components/Heading';
 import Input from '@components/Input';
 import FilledButton from '@components/FilledButton';
+import {registerScreenStyles} from '@styles/styles';
 
 export default function RegisterScreen({navigation}) {
   const [usuarioMeta] = UsuarioService();
@@ -25,29 +26,29 @@ export default function RegisterScreen({navigation}) {
 
   return (
     <ScrollView>
-      <KeyboardAvoidingView behavior={'height'} style={styles.container}>
-        <Heading style={styles.title}>REGISTRARSE</Heading>
+      <KeyboardAvoidingView behavior={'height'} style={registerScreenStyles.container}>
+        <Heading style={registerScreenStyles.title}>REGISTRARSE</Heading>
         <Input
-          style={styles.input}
+          style={registerScreenStyles.input}
           value={nombre}
           onChangeText={text => setNombre(text)}
           placeholder={'Nombre'}
         />
         <Input
-          style={styles.input}
+          style={registerScreenStyles.input}
           value={apellido}
           onChangeText={text => setApellido(text)}
           placeholder={'Apellido'}
         />
         <Input
-          style={styles.input}
+          style={registerScreenStyles.input}
           value={email}
           onChangeText={text => setEmail(text)}
           placeholder={'Email'}
           keyboardType={'email-address'}
         />
         <Input
-          style={styles.input}
+          style={registerScreenStyles.input}
           value={password}
           onChangeText={text => setPassword(text)}
           placeholder={'Contraseña'}
@@ -55,7 +56,7 @@ export default function RegisterScreen({navigation}) {
         />
         <FilledButton
           title={'Confirmar Registro'}
-          style={styles.registerButton}
+          style={registerScreenStyles.registerButton}
           onPress={() => {
             handleRegistro();
             //console.log(nombre, apellido, email, password);
@@ -65,20 +66,3 @@ export default function RegisterScreen({navigation}) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 16,
-    alignItems: 'center',
-  },
-  title: {
-    marginBottom: 26,
-  },
-  input: {
-    marginVertical: 10,
-  },
-  registerButton: {
-    marginVertical: 30,
-  },
-});

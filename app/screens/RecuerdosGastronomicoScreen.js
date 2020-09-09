@@ -89,7 +89,7 @@ export default function RecuerdosGastronomicoScreen ({route}) {
       <View style={{padding: 20, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.WHITE}}>
         <Text h4>Tus Recuerdos</Text>
         <Text>en</Text>
-        <Text h2>{item.nombre}</Text>
+        <Text h2>{item.comercio.nombre}</Text>
       </View>
       <Divider />
       <View style={{justifyContent: 'center', flex: 1, paddingTop: 30, paddingBottom:15}}>

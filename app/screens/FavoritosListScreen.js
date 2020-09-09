@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, ActivityIndicator } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { SearchBar, Button, ListItem, Text, Overlay } from 'react-native-elements';
 import RNPickerSelect from 'react-native-picker-select';
 import AlojamientosFavService from '@services/AlojamientosFavService';
 import GastronomicosFavService from '@services/GastronomicosFavService';
 import LocalidadesService from '@services/LocalidadesService';
 import ListEmpty from '@components/ListEmpty';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function FavoritosListScreen({ navigation }) {
   const [alojamientosFavMeta] = AlojamientosFavService();
@@ -36,7 +35,7 @@ export default function FavoritosListScreen({ navigation }) {
     setGastronomicosFav(arrayGastronomicosFav);
   }
 
-  useEffect(() => {    
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchFavoritos();
     });
@@ -47,24 +46,24 @@ export default function FavoritosListScreen({ navigation }) {
   const getAlojamientosFav = () => {
     let alojamientos = alojamientosFav;
     if (localidad != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.localidad.id == localidad);
+        alojamientos = alojamientos.filter((alojamiento) => alojamiento.comercio.localidad.id == localidad);
     };
     if (search === ""){
       return alojamientos;
     } else {
-      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
+      return alojamientos.filter((alojamiento) => alojamiento.comercio.nombre.toLowerCase().includes(search.toLowerCase()));    
     };
   };
 
   const getGastronomicosFav = () => {
     let gastronomicos = gastronomicosFav;
     if (localidad != null){
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
+      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.comercio.localidad?.id == localidad);
     };
     if (search === ""){
       return gastronomicos;
     } else {
-      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
+      return gastronomicos.filter((gastronomico) => gastronomico.comercio.nombre.toLowerCase().includes(search.toLowerCase()));    
     };
   };
 
@@ -94,9 +93,9 @@ export default function FavoritosListScreen({ navigation }) {
             keyExtractor={({ id }, index) => id}
             renderItem={( {item} ) => (
                 <ListItem
-                title={item.nombre}
-                subtitle={item.domicilio}
-                leftAvatar={{ source: { uri: item.foto } }}
+                title={item.comercio.nombre}
+                subtitle={item.comercio.domicilio}
+                leftAvatar={{ source: { uri: item.comercio.foto } }}
                 onPress={() => verDetalles(item)}
                 bottomDivider
                 chevron

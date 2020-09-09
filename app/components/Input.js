@@ -8,9 +8,10 @@ export default function Input({style, ...props}) {
 
 const styles = StyleSheet.create({
     input: {
-        backgroundColor: Colors.LIGHTGRAY,
+        backgroundColor: Colors.WHITE,
         width: '90%',
         padding: 8,
         borderRadius: 8,
+        elevation: 2,
     }
 })

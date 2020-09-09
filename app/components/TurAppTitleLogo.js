@@ -5,7 +5,7 @@ export default function TurAppTitleLogo () {
     return (
         <Image
             source={require('@resources/images/TurApp-logo.png')}
-            style={{ height:35, width:100 }}
+            style={{ height:42, width:125 }}
         />
         );
 }

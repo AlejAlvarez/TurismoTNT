@@ -1,11 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
-import { Button, Text, Overlay, SearchBar } from 'react-native-elements';
+import {View, Image, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {Button, Text, Overlay, SearchBar} from 'react-native-elements';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
@@ -22,6 +17,7 @@ import EspecialidadesService from '@services/EspecialidadesService';
 import ActividadesService from '@services/ActividadesService';
 import {mapStyles} from '@styles/styles';
 import Colors from '@styles/colors';
+import IconButton from '@components/IconButton';
 
 check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
   .then(result => {
@@ -84,83 +80,120 @@ export default function MapScreen({navigation}) {
   const [showFavoritos, setShowFavoritos] = useState(false);
   const [alojamientosFav, setAlojamientosFav] = useState([]);
   const [gastronomicosFav, setGastronomicosFav] = useState([]);
-  const [search, setSearch] = useState("");
-
+  const [search, setSearch] = useState('');
 
   const getAlojamientos = () => {
     let alojamientos = alojamientosMeta.data;
-    if (localidad != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.localidad.id == localidad);
-    };
-    if (clasificacion != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.clasificacion.id == clasificacion);
-    };
-    if (categoria != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.categoria.id == categoria);
-    };
-    if (search === ""){
+    if (localidad != null) {
+      alojamientos = alojamientos.filter(
+        alojamiento => alojamiento.comercio.localidad.id == localidad,
+      );
+    }
+    if (clasificacion != null) {
+      alojamientos = alojamientos.filter(
+        alojamiento => alojamiento.clasificacion.id == clasificacion,
+      );
+    }
+    if (categoria != null) {
+      alojamientos = alojamientos.filter(
+        alojamiento => alojamiento.categoria.id == categoria,
+      );
+    }
+    if (search === '') {
       return alojamientos;
     } else {
-      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
-    };
+      return alojamientos.filter(alojamiento =>
+        alojamiento.comercio.nombre
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      );
+    }
   };
 
   const getGastronomicos = () => {
     let gastronomicos = gastronomicosMeta.data;
-    if (localidad != null){
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
-    };
-    if (actividad != null){
-      const checkAct = (item) => item.actividade.id === actividad;
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.actividad_gastronomicos?.some(checkAct));
-    };
-    if (especialidad != null){
-      const checkEsp = (item) => item.especialidade.id === especialidad;
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidad_gastronomicos?.some(checkEsp));
-    };
-    if (search === ""){
+    if (localidad != null) {
+      gastronomicos = gastronomicos.filter(
+        gastronomico => gastronomico.localidade?.id == localidad,
+      );
+    }
+    if (actividad != null) {
+      const checkAct = item => item.actividade.id === actividad;
+      gastronomicos = gastronomicos.filter(gastronomico =>
+        gastronomico.actividad_gastronomicos?.some(checkAct),
+      );
+    }
+    if (especialidad != null) {
+      const checkEsp = item => item.especialidade.id === especialidad;
+      gastronomicos = gastronomicos.filter(gastronomico =>
+        gastronomico.especialidad_gastronomicos?.some(checkEsp),
+      );
+    }
+    if (search === '') {
       return gastronomicos;
     } else {
-      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
-    };
+      return gastronomicos.filter(gastronomico =>
+        gastronomico.nombre.toLowerCase().includes(search.toLowerCase()),
+      );
+    }
   };
 
   const getAlojamientosFav = () => {
     let alojamientos = alojamientosFav;
-    if (localidad != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.localidad.id == localidad);
-    };
-    if (clasificacion != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.clasificacion.id == clasificacion);
-    };
-    if (categoria != null){
-        alojamientos = alojamientos.filter((alojamiento) => alojamiento.categoria.id == categoria);
-    };
-    if (search === ""){
+    if (localidad != null) {
+      alojamientos = alojamientos.filter(
+        alojamiento => alojamiento.comercio.localidad.id == localidad,
+      );
+    }
+    if (clasificacion != null) {
+      alojamientos = alojamientos.filter(
+        alojamiento => alojamiento.clasificacion.id == clasificacion,
+      );
+    }
+    if (categoria != null) {
+      alojamientos = alojamientos.filter(
+        alojamiento => alojamiento.categoria.id == categoria,
+      );
+    }
+    if (search === '') {
       return alojamientos;
     } else {
-      return alojamientos.filter((alojamiento) => alojamiento.nombre.toLowerCase().includes(search.toLowerCase()));    
-    };
+      return alojamientos.filter(alojamiento =>
+        alojamiento.comercio.nombre
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      );
+    }
   };
 
   const getGastronomicosFav = () => {
     let gastronomicos = gastronomicosFav;
-    if (localidad != null){
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.localidade?.id == localidad);
-    };
-    if (actividad != null){
-      const checkAct = (item) => item.actividade.id === actividad;
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.actividad_gastronomicos?.some(checkAct));
-    };
-    if (especialidad != null){
-      const checkEsp = (item) => item.especialidade.id === especialidad;
-      gastronomicos = gastronomicos.filter((gastronomico) => gastronomico.especialidad_gastronomicos?.some(checkEsp));
-    };
-    if (search === ""){
+    if (localidad != null) {
+      gastronomicos = gastronomicos.filter(
+        gastronomico => gastronomico.comercio.localidad?.id == localidad,
+      );
+    }
+    if (actividad != null) {
+      const checkAct = item => item.actividade.id === actividad;
+      gastronomicos = gastronomicos.filter(gastronomico =>
+        gastronomico.actividades_gastronomico?.some(checkAct),
+      );
+    }
+    if (especialidad != null) {
+      const checkEsp = item => item.especialidade.id === especialidad;
+      gastronomicos = gastronomicos.filter(gastronomico =>
+        gastronomico.especialidades_gastronomico?.some(checkEsp),
+      );
+    }
+    if (search === '') {
       return gastronomicos;
     } else {
-      return gastronomicos.filter((gastronomico) => gastronomico.nombre.toLowerCase().includes(search.toLowerCase()));    
-    };
+      return gastronomicos.filter(gastronomico =>
+        gastronomico.comercio.nombre
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      );
+    }
   };
 
   const getAlojamientosFavService = async () => {
@@ -172,14 +205,14 @@ export default function MapScreen({navigation}) {
     let arrayGastronomicosFav = await gastronomicosFavMeta.getFavoritos();
     return arrayGastronomicosFav;
   };
-  
-  const fetchFavoritos = async () =>{
+
+  const fetchFavoritos = async () => {
     let arrayAlojamientosFav = await getAlojamientosFavService();
     let arrayGastronomicosFav = await getGastronomicosFavService();
 
     setAlojamientosFav(arrayAlojamientosFav);
     setGastronomicosFav(arrayGastronomicosFav);
-  }
+  };
 
   useEffect(() => {
     // Conseguimos la posicion desde donde se esta conectando
@@ -198,18 +231,19 @@ export default function MapScreen({navigation}) {
 
     fetchFavoritos();
   }, []);
-  
+
   const verDetalles = item => {
     setActiveMarker(false);
-    item.categoria? navigation.navigate('AlojamientoDetails', {item: item})
+    item.categoria
+      ? navigation.navigate('AlojamientoDetails', {item: item})
       : navigation.navigate('GastronomicoDetails', {item: item});
-  }
+  };
 
   return (
     <View style={mapStyles.container}>
-      {(alojamientosMeta.isLoading || gastronomicosMeta.isLoading) ? (
+      {alojamientosMeta.isLoading || gastronomicosMeta.isLoading ? (
         <ActivityIndicator style={{flex: 1}} animating size="large" />
-      ) : (alojamientosMeta.isError || gastronomicosMeta.isError) ? (
+      ) : alojamientosMeta.isError || gastronomicosMeta.isError ? (
         <Text>Error...</Text>
       ) : showFavoritos ? (
         <MapView
@@ -217,11 +251,11 @@ export default function MapScreen({navigation}) {
           style={mapStyles.map}
           showsUserLocation
           initialRegion={currentPosition}>
-          {getAlojamientosFav().map(item => (
+          {getAlojamientosFav().map(alojamiento => (
             <Marker
               coordinate={{
-                latitude: item.lat,
-                longitude: item.lng,
+                latitude: alojamiento.comercio.lat,
+                longitude: alojamiento.comercio.lng,
               }}
               onPress={event => {
                 event.stopPropagation();
@@ -245,8 +279,8 @@ export default function MapScreen({navigation}) {
           {getGastronomicosFav().map(gastronomico => (
             <Marker
               coordinate={{
-                latitude: gastronomico.lat,
-                longitude: gastronomico.lng,
+                latitude: gastronomico.comercio.lat,
+                longitude: gastronomico.comercio.lng,
               }}
               onPress={event => {
                 event.stopPropagation();
@@ -267,18 +301,18 @@ export default function MapScreen({navigation}) {
               </View>
             </Marker>
           ))}
-        </MapView> 
+        </MapView>
       ) : (
         <MapView
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={mapStyles.map}
           showsUserLocation
           initialRegion={currentPosition}>
-          {getAlojamientos().map(item => (
+          {getAlojamientos().map(alojamiento => (
             <Marker
               coordinate={{
-                latitude: item.lat,
-                longitude: item.lng,
+                latitude: alojamiento.comercio.lat,
+                longitude: alojamiento.comercio.lng,
               }}
               onPress={event => {
                 event.stopPropagation();
@@ -302,8 +336,8 @@ export default function MapScreen({navigation}) {
           {getGastronomicos().map(gastronomico => (
             <Marker
               coordinate={{
-                latitude: gastronomico.lat,
-                longitude: gastronomico.lng,
+                latitude: gastronomico.comercio.lat,
+                longitude: gastronomico.comercio.lng,
               }}
               onPress={event => {
                 event.stopPropagation();
@@ -324,114 +358,154 @@ export default function MapScreen({navigation}) {
               </View>
             </Marker>
           ))}
-        </MapView>)}
-      <TouchableOpacity
-        style={mapStyles.filterBtn}
-        onPress={() => setIsVisibleOverlay(true)}>
-          <Icon
-            name="magnify"
-            size={30}
-          />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={mapStyles.favBtn}
-        onPress={() => setShowFavoritos(!showFavoritos)}>
-        {showFavoritos ? <Icon name="heart" size={30} /> : <Icon name="heart-outline" size={30} />}
-      </TouchableOpacity>
+        </MapView>
+      )}
+      <IconButton
+        iconName={'magnify'}
+        iconSize={30}
+        style={{bottom: 20, right: 20}}
+        onPress={() => setIsVisibleOverlay(true)}
+      />
+      {showFavoritos ? (
+        <IconButton
+          style={{bottom: 80, right: 20}}
+          onPress={() => setShowFavoritos(!showFavoritos)}
+          iconName="heart"
+          iconSize={30}
+        />
+      ) : (
+        <IconButton
+          style={{bottom: 80, right: 20}}
+          onPress={() => setShowFavoritos(!showFavoritos)}
+          iconName="heart-outline"
+          iconSize={30}
+        />
+      )}
       <Overlay
         isVisible={activeMarker}
         onBackdropPress={() => setActiveMarker(false)}
-        overlayStyle = {{height:420, width:280}}>
-        { activeMarker && 
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.WHITE }}>
-          { item.foto ? (
-            <Image
-              source={{ uri: item.foto }}
-              style={{ width:250, height:200, padding: 10 }}
-              PlaceholderContent={<ActivityIndicator />}
-            />) : (
-            <Image
-              source={require('@resources/images/sin-foto.jpg')}
-              style={{ width:350, height:200, padding: 10 }}
-              PlaceholderContent={<ActivityIndicator />}              
-            />
-          )}
-          <Text h3 style={{padding: 10}}>{item.nombre}</Text>
-          <TouchableOpacity
-            style={mapStyles.button}
-            onPress={() => verDetalles(item)}>
+        overlayStyle={{height: 420, width: 280}}>
+        {activeMarker && (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: Colors.WHITE,
+            }}>
+            {item.foto ? (
+              <Image
+                source={{uri: item.foto}}
+                style={{width: 250, height: 200, padding: 10}}
+                PlaceholderContent={<ActivityIndicator />}
+              />
+            ) : (
+              <Image
+                source={require('@resources/images/sin-foto.jpg')}
+                style={{width: 350, height: 200, padding: 10}}
+                PlaceholderContent={<ActivityIndicator />}
+              />
+            )}
+            <Text h3 style={{padding: 10}}>
+              {item.nombre}
+            </Text>
+            <TouchableOpacity
+              style={mapStyles.button}
+              onPress={() => verDetalles(item)}>
               <Text style={mapStyles.buttonText}>Ver Más</Text>
-          </TouchableOpacity>
-        </View>}
+            </TouchableOpacity>
+          </View>
+        )}
       </Overlay>
 
       <Overlay
-          isVisible={isVisibleOverlay}
-          onBackdropPress={() => setIsVisibleOverlay(false)}
-          overlayStyle = {{height:600, width:300}}>
-          <Text h3>Filtros</Text>
-          <SearchBar
-            round
-            placeholder="Filtrar por nombre..."  
-            onChangeText={(text) => setSearch(text)}
-            onClear={() => setSearch("")}
-            value={search}
-            lightTheme={true}
-            style={{paddingBottom: 5}}
-          />
-          <Text h4>Localidad</Text>
-          <RNPickerSelect
-              style={{width: '50%', backgroundColor: 'lightyellow'}}
-              onValueChange={(value) => {
-                  setLocalidad(value);
-              }}
-              items={localidadesMeta.data.map(localidad => ({label: localidad.nombre, value: localidad.id}))}
-              value={localidad}
-              placeholder={{label: "Todas", value: null}}/>
-          <Text h4>Alojamientos</Text>
-          <Text>Selecione una Clasificacion</Text>
-          <RNPickerSelect
-              style={{width: '50%', backgroundColor: 'lightyellow'}}
-              onValueChange={(value) => {
-                  setClasificacion(value);
-              }}
-              items={clasificacionesMeta.data.map(clasificacion => ({label: clasificacion.nombre, value: clasificacion.id}))}
-              value={clasificacion}
-              placeholder={{label: "Todas", value: null}}/>
-          <Text>Selecione una Categoria</Text>
-          <RNPickerSelect
-              style={{width: '50%', backgroundColor: 'lightyellow'}}
-              onValueChange={(value) => {
-                  setCategoria(value);
-              }}
-              items={categoriasMeta.data.map(categoria => ({label: categoria.estrellas, value: categoria.id}))}
-              value={categoria}
-              placeholder={{label: "Todas", value: null}}/>
-          <Text h4>Gastronomicos</Text>
+        isVisible={isVisibleOverlay}
+        onBackdropPress={() => setIsVisibleOverlay(false)}
+        overlayStyle={{height: 600, width: 300}}>
+        <Text h3>Filtros</Text>
+        <SearchBar
+          round
+          placeholder="Filtrar por nombre..."
+          onChangeText={text => setSearch(text)}
+          onClear={() => setSearch('')}
+          value={search}
+          lightTheme={true}
+          style={{paddingBottom: 5}}
+        />
+        <Text h4>Localidad</Text>
+        <RNPickerSelect
+          style={{width: '50%', backgroundColor: 'lightyellow'}}
+          onValueChange={value => {
+            setLocalidad(value);
+          }}
+          items={localidadesMeta.data.map(localidad => ({
+            label: localidad.nombre,
+            value: localidad.id,
+          }))}
+          value={localidad}
+          placeholder={{label: 'Todas', value: null}}
+        />
+        <Text h4>Alojamientos</Text>
+        <Text>Selecione una Clasificacion</Text>
+        <RNPickerSelect
+          style={{width: '50%', backgroundColor: 'lightyellow'}}
+          onValueChange={value => {
+            setClasificacion(value);
+          }}
+          items={clasificacionesMeta.data.map(clasificacion => ({
+            label: clasificacion.nombre,
+            value: clasificacion.id,
+          }))}
+          value={clasificacion}
+          placeholder={{label: 'Todas', value: null}}
+        />
+        <Text>Selecione una Categoria</Text>
+        <RNPickerSelect
+          style={{width: '50%', backgroundColor: 'lightyellow'}}
+          onValueChange={value => {
+            setCategoria(value);
+          }}
+          items={categoriasMeta.data.map(categoria => ({
+            label: categoria.estrellas,
+            value: categoria.id,
+          }))}
+          value={categoria}
+          placeholder={{label: 'Todas', value: null}}
+        />
+        <Text h4>Gastronomicos</Text>
         <Text>Selecione una Actividad</Text>
         <RNPickerSelect
-            style={{width: '50%', backgroundColor: 'lightyellow'}}
-            onValueChange={(value) => {
-                setActividad(value);
-            }}
-            items={especialidadesMeta.data.map(especialidad => ({label: especialidad.nombre, value: especialidad.id}))}
-            value={actividad}
-            placeholder={{label: "Todas", value: null}}/>
+          style={{width: '50%', backgroundColor: 'lightyellow'}}
+          onValueChange={value => {
+            setActividad(value);
+          }}
+          items={especialidadesMeta.data.map(especialidad => ({
+            label: especialidad.nombre,
+            value: especialidad.id,
+          }))}
+          value={actividad}
+          placeholder={{label: 'Todas', value: null}}
+        />
         <Text>Selecione una Especialidad</Text>
         <RNPickerSelect
-            style={{width: '50%', backgroundColor: 'lightyellow'}}
-            onValueChange={(value) => {
-                setEspecialidad(value);
-            }}
-            items={actividadesMeta.data.map(actividad => ({label: actividad.nombre, value: actividad.id}))}
-            value={especialidad}
-            placeholder={{label: "Todas", value: null}}/>
+          style={{width: '50%', backgroundColor: 'lightyellow'}}
+          onValueChange={value => {
+            setEspecialidad(value);
+          }}
+          items={actividadesMeta.data.map(actividad => ({
+            label: actividad.nombre,
+            value: actividad.id,
+          }))}
+          value={especialidad}
+          placeholder={{label: 'Todas', value: null}}
+        />
         <Button
-            title="Aceptar"
-            onPress={() => {
+          title="Aceptar"
+          onPress={() => {
             setIsVisibleOverlay(false);
-            }}
-            style={{marginTop:10}}/>
+          }}
+          style={{marginTop: 10}}
+        />
       </Overlay>
     </View>
   );
