@@ -5,7 +5,7 @@ import {TouchableOpacity, StyleSheet} from 'react-native';
 
 export default function FilledButton({title, style, onPress}) {
   return (
-    <TouchableOpacity style={[style, styles.button]} onPress={onPress}>
+    <TouchableOpacity style={[ styles.button, style]} onPress={onPress}>
       <Text style={styles.text}>{title.toUpperCase()}</Text>
     </TouchableOpacity>
   );

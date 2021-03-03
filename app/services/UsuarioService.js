@@ -102,6 +102,26 @@ export default function UsuarioService() {
     setUsuario(null);
   };
 
+  const updateUltimaVez = async (user_id) => {
+    const response = await client.mutate({
+      mutation: gql `
+        mutation UpdateUltVez {
+          update_usuarios(
+            where: {
+              id: {_eq: ${user_id}}
+            }, 
+            _set: {
+              ultima_vez: "now()"
+            })
+            {
+              affected_rows
+            }
+        }
+      `
+    });
+    return response.data;
+  }
+
   const update = async (email, nombre, apellido, password) => {
     const response = await client.mutate({
       mutation: gql `
@@ -201,5 +221,6 @@ export default function UsuarioService() {
     drop,
     login,
     logout,
+    updateUltimaVez,
   }];
 };

@@ -1,120 +1,15 @@
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-community/async-storage';
-import ApolloClient from 'apollo-boost';
-import { gql } from 'apollo-boost';
-import DEFAULT_IP from '@resources/IPConfig';
-
-
-const ALOJAMIENTOS_QUERY = gql `
-query AlojamientosQuery {
-  alojamientos {
-    id
-    comercio {
-      id
-      nombre
-      domicilio
-      foto
-      lat
-      lng
-      localidad {
-        id
-        nombre
-      }
-    }
-    categoria {
-      id
-      estrellas
-      valor
-    }
-    clasificacion {
-      id
-      nombre
-    }
-  }
-}
-`;
-
-const GASTRONOMICOS_QUERY = gql `
-query GastronomicosQuery {
-  gastronomicos {
-    id
-    comercio {
-      id
-      nombre
-      domicilio
-      foto
-      lat
-      lng
-      localidad {
-        id
-        nombre
-      }
-    }
-    especialidades_gastronomico {
-      especialidad {
-        id
-        nombre
-      }
-    }
-    actividades_gastronomico {
-      actividad {
-        id
-        nombre
-      }
-    }
-  }
-}
-`;
-
-const LOCALIDADES_QUERY = gql `
-query LocalidadesQuery {
-  localidades {
-    nombre
-    id
-  }
-}
-`;
-
-const CLASIFICACIONES_QUERY = gql `
-query ClasificacionesQuery {
-  clasificaciones {
-    nombre
-    id
-  }
-}
-`;
-
-const CATEGORIAS_QUERY = gql `
-query CategoriasQuery {
-  categorias {
-    estrellas
-    id
-    valor
-  }
-}
-`;
-
-const ESPECIALIDADES_QUERY = gql `
-query EspecialidadesQuery {
-  especialidades {
-    id
-    nombre
-  }
-}
-`;
-
-const ACTIVIDADES_QUERY = gql `
-query ActividadesQuery {
-  actividades {
-    id
-    nombre
-  }
-}
-`;
-
-const client = new ApolloClient({
-  uri: `http://${DEFAULT_IP}:8080/v1/graphql`,
-});
+import client from '@graphql/client';
+import {
+  ALOJAMIENTOS_QUERY,
+  GASTRONOMICOS_QUERY,
+  LOCALIDADES_QUERY,
+  CLASIFICACIONES_QUERY,
+  CATEGORIAS_QUERY,
+  ESPECIALIDADES_QUERY,
+  ACTIVIDADES_QUERY
+} from '@graphql/queries';
 
 /*
 const syncComercios = async () =>{

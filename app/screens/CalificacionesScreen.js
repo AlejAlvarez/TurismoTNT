@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {View, FlatList, ScrollView, Alert} from 'react-native';
+import {View, FlatList, Alert} from 'react-native';
 import {Text, Overlay} from 'react-native-elements';
 import RNPickerSelect from 'react-native-picker-select';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -57,31 +57,40 @@ export default (CalificacionesScreen = ({navigation, route}) => {
   }, [navigation]);
 
   const _renderCalificacion = ({item}) => (
-    <Comment author={item.usuario} style={{marginBottom: '20%'}}>
-      {item.calificacion == 1 ? (
-        <Icon
-          name="emoticon-happy-outline"
-          size={34}
-          color={Colors.LIGHTGREEN}
-          style={{margin: 5}}
-        />
-      ) : item.calificacion == 2 ? (
-        <Icon
-          name="emoticon-neutral-outline"
-          size={34}
-          color={Colors.GOLD}
-          style={{margin: 5}}
-        />
-      ) : (
-        <Icon
-          name="emoticon-sad-outline"
-          size={34}
-          color={Colors.RED}
-          style={{margin: 5}}
-        />
-      )}
-      <Text style={{marginLeft: 5, marginRight: '5%'}}>{item.comentario}</Text>
-    </Comment>
+    <View>
+      <Text style={{
+        fontSize: 14, 
+        fontWeight: 'bold',
+        marginLeft: '2%',
+        marginBottom: '2%'}}>
+        {item.usuario.nombre} {item.usuario.apellido}:
+      </Text>
+      <Comment style={{marginBottom: '10%'}}>
+        {item.calificacion == 1 ? (
+          <Icon
+            name="emoticon-happy-outline"
+            size={34}
+            color={Colors.LIGHTGREEN}
+            style={{margin: 5}}
+          />
+        ) : item.calificacion == 2 ? (
+          <Icon
+            name="emoticon-neutral-outline"
+            size={34}
+            color={Colors.GOLD}
+            style={{margin: 5}}
+          />
+        ) : (
+          <Icon
+            name="emoticon-sad-outline"
+            size={34}
+            color={Colors.RED}
+            style={{margin: 5}}
+          />
+        )}
+        <Text style={{marginLeft: 5, marginRight: '5%'}}>{item.comentario}</Text>
+      </Comment>
+    </View>
   );
 
   const handleButtonPress = () => {

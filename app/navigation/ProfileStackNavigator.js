@@ -14,7 +14,7 @@ export default function ProfileStackNavigator(){
             <Stack.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{title: "Tu Perfil", headerTitleAlign: 'center', headerTitleStyle: { fontWeight: 'bold' } }} />
+                options={({navigation}) => ({title: "Tu Perfil", headerTitleAlign: 'center', headerTitleStyle: { fontWeight: 'bold' } })} />
             <Stack.Screen
                 name="Login"
                 component={LoginScreen}

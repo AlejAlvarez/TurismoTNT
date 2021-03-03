@@ -5,21 +5,13 @@ import Colors from '@styles/colors';
 
 export default Comment = ({style, author, children}) => {
   return(
-    <View style={[styles.container, style]}>
-      <Text style={styles.author}>{author.nombre} {author.apellido}:</Text>
-      <View style={styles.comment}>
+      <View style={[styles.comment, style]}>
         {children}
       </View>
-    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: "90%",
-    height: 30,
-    marginHorizontal: 20,
-  },
   author: {
     fontSize: 14, 
     fontWeight: 'bold', 
@@ -27,17 +19,14 @@ const styles = StyleSheet.create({
     marginBottom: 4
   },
   comment: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: '5%',
     backgroundColor: Colors.WHITE, 
     borderRadius: 14, 
-    width: "100%", 
+    width: "90%",
     alignItems: 'center',
     justifyContent: 'flex-start',
-    elevation: 1 
-  },
-  content: {
-    fontSize: 16, 
-    textAlign: 'left',
-    margin: 10
+    elevation: 1,
   },
 });

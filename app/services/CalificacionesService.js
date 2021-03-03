@@ -1,25 +1,6 @@
-import ApolloClient from 'apollo-boost';
-import {gql} from 'apollo-boost';
-import DEFAULT_IP from '@resources/IPConfig';
-
-const CALIFICACIONES_QUERY = gql`
-  query CalificacionesQuery {
-    calificaciones {
-      id
-      comentario
-      calificacion
-      usuario {
-        nombre
-        apellido
-        id
-      }
-    }
-  }
-`;
-
-const client = new ApolloClient({
-  uri: `http://${DEFAULT_IP}:8080/v1/graphql`,
-});
+import { gql } from '@apollo/client';
+import client from '@graphql/client';
+import { CALIFICACIONES_QUERY } from '@graphql/queries';
 
 export default function CalificacionesService() {
   
@@ -38,6 +19,9 @@ export default function CalificacionesService() {
                 id
                 calificacion
                 comentario
+                comercio {
+                  nombre
+                }
                 usuario {
                   nombre
                   apellido
@@ -49,16 +33,21 @@ export default function CalificacionesService() {
     return response.data.calificaciones;
   };
 
-  const getByUsuario = async email => {
+  const getByUsuario = async usuario_id => {
     const response = await client.query({
       query: gql`     
-          calificaciones(where: {usuario: {email: {_eq: "${email}"}}}) {
-            id
-            calificacion
-            comentario
-            usuario {
-              nombre
-              apellido
+          query getCalificacionesUsuario {
+            calificaciones(where: {usuario_id: {_eq: ${usuario_id}}}) {
+              id
+              calificacion
+              comentario
+              comercio {
+                nombre
+              }
+              usuario {
+                nombre
+                apellido
+              }
             }
           }
         `,

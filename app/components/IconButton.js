@@ -3,7 +3,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Colors from '@styles/colors';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 
-export default function IconButton({iconName, iconSize, style, onPress}) {
+export default function IconButton({iconName, iconSize, iconColor, style, onPress}) {
   return (
     <TouchableOpacity
       style={[styles.button, style]}
@@ -11,6 +11,7 @@ export default function IconButton({iconName, iconSize, style, onPress}) {
         <Icon
           name = {iconName}
           size = {iconSize}
+          color = {iconColor} 
         />
     </TouchableOpacity>
   );

@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, {useState, useMemo} from 'react';
+import React, { useState, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeStackNavigator from '@navigation/HomeStackNavigator';
 import FavoritosStackNavigator from '@navigation/FavoritosStackNavigator';
@@ -8,6 +8,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { NavigationContainer } from '@react-navigation/native';
 import { initStorage } from '@services/Storage';
 import UserContext from '@context/UserContext';
+import { ApolloProvider } from "@apollo/client";
+import client from '@graphql/client';
+
 
 initStorage();
 
@@ -21,8 +24,8 @@ function App(){
   const providerValue = useMemo(() => ({usuario, setUsuario}), [usuario, setUsuario]);
 
   return (
-    <UserContext.Provider
-      value={providerValue}>
+    <UserContext.Provider value={providerValue}>
+      <ApolloProvider client={client}>
         <NavigationContainer>
           <Tab.Navigator
           initialRouteName="Home">
@@ -55,7 +58,8 @@ function App(){
               }}/>
           </Tab.Navigator>
         </NavigationContainer>
-      </UserContext.Provider>
+      </ApolloProvider>
+    </UserContext.Provider>
   );
 }
 
