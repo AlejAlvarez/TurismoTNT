@@ -9,7 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { initStorage } from '@services/Storage';
 import UserContext from '@context/UserContext';
 import { ApolloProvider } from "@apollo/client";
-import client from '@graphql/client';
+import { client } from '@graphql/client';
 
 
 initStorage();

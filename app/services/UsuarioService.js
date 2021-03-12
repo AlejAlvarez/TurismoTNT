@@ -1,6 +1,6 @@
-import {useContext} from 'react';
-import ApolloClient from 'apollo-boost';
-import { gql } from 'apollo-boost';
+import { useContext } from 'react';
+import { client } from '@graphql/client';
+import { gql } from '@apollo/client';
 import DEFAULT_IP from '@resources/IPConfig';
 import UserContext from '@context/UserContext';
 
@@ -16,10 +16,6 @@ query UsuarioQuery {
   }
 }
 `;
-
-const client = new ApolloClient({
-  uri: `http://${DEFAULT_IP}:8080/v1/graphql`,
-});
 
 
 export default function UsuarioService() {
