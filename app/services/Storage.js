@@ -1,6 +1,6 @@
 import Storage from 'react-native-storage';
 import AsyncStorage from '@react-native-community/async-storage';
-import client from '@graphql/client';
+import { client } from '@graphql/client';
 import {
   ALOJAMIENTOS_QUERY,
   GASTRONOMICOS_QUERY,

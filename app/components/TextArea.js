@@ -19,8 +19,8 @@ export default TextArea = ({style, placeholder, value, onChangeText}) => {
 
 const styles = StyleSheet.create({
   container:{
-    height: '10%',
-    width:'90%',
+    height: '5%',
+    width:'80%',
     borderColor: Colors.GRAY,
     backgroundColor: Colors.WHITE,
     borderWidth: 1,

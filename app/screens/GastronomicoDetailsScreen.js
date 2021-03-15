@@ -126,7 +126,7 @@ export default function GastronomicoDetailsScreen({navigation, route}) {
             {_renderActividades()}
           </View>
           <Text style={detailsScreenStyles.subTitle}>Especialidades: </Text>
-          <View style={detailsScreenStyles.subContainer}>
+          <View style={detailsScreenStyles.subContainer, {marginBottom: 20}}>
             {_renderEspecialidades()}
           </View>
           <Text style={detailsScreenStyles.direccion}>

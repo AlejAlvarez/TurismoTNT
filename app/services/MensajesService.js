@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import client from '@graphql/client';
+import { client } from '@graphql/client';
 
 export default function MensajesService() {
 

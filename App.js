@@ -16,7 +16,7 @@ initStorage();
 
 const Tab = createBottomTabNavigator();
 
-console.disableYellowBox = false;
+console.disableYellowBox = true;
 
 function App(){
   // Aca si le damos el valor por defecto

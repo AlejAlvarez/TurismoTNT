@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import client from '@graphql/client';
+import { client } from '@graphql/client';
 import { CALIFICACIONES_QUERY } from '@graphql/queries';
 
 export default function CalificacionesService() {

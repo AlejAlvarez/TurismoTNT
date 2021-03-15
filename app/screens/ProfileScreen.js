@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext, useLayoutEffect} from 'react';
-import {View, TouchableOpacity, Alert, FlatList} from 'react-native';
+import {View, TouchableOpacity, Alert, FlatList, KeyboardAvoidingView} from 'react-native';
 import {Text, Overlay} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -55,7 +55,7 @@ export default function ProfileScreen({navigation}) {
       setPassword(usuario.password);
       fetchCalificaciones();
     }
-  }, [usuario]);
+  }, [usuario, calificaciones]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -263,47 +263,49 @@ export default function ProfileScreen({navigation}) {
             />
           </View>
           {calificacionSelecc &&
-          <Overlay
-            isVisible={isVisibleOverlay}
-            onBackdropPress={() => setIsVisibleOverlay(false)}
-            overlayStyle={{
-              width: '80%',
-              height: '80%',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 10,
-            }}>
-            <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: '5%'}}>
-              Comentario en {calificacionSelecc.comercio.nombre}:
-            </Text>
-            <RNPickerSelect
-              onValueChange={value => {
-                setCalificacion(value);
-              }}
-              items={calificacionesPosibles.map(calificacion => ({
-                label: calificacion.nombre,
-                value: calificacion.valor,
-              }))}
-              value={calificacion}
-              placeholder={{label: 'Seleccionar una calificación', value: null}}
-            />
-            <TextArea
-              placeholder={'Escribe un nuevo comentario...'}
-              value={comentario}
-              style={{marginVertical: '5%', height: '40%'}}
-              onChangeText={text => setComentario(text)}
-            />
-            <FilledButton
-              title="Editar Comentario"
-              style={{marginTop: '5%'}}
-              onPress={() => handleUpdateButtonPress()}
-            />
-            <FilledButton
-              title="Eliminar Comentario"
-              style={{marginTop: '5%', backgroundColor: Colors.RED}}
-              onPress={() => handleDeleteButtonPress()}
-            />
-          </Overlay>}
+          <KeyboardAvoidingView behavior="heigth">
+            <Overlay
+              isVisible={isVisibleOverlay}
+              onBackdropPress={() => setIsVisibleOverlay(false)}
+              overlayStyle={{
+                width: '80%',
+                height: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 10,
+              }}>
+              <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: '5%'}}>
+                Comentario en {calificacionSelecc.comercio.nombre}:
+              </Text>
+              <RNPickerSelect
+                onValueChange={value => {
+                  setCalificacion(value);
+                }}
+                items={calificacionesPosibles.map(calificacion => ({
+                  label: calificacion.nombre,
+                  value: calificacion.valor,
+                }))}
+                value={calificacion}
+                placeholder={{label: 'Seleccionar una calificación', value: null}}
+              />
+              <TextArea
+                placeholder={'Escribe un nuevo comentario...'}
+                value={comentario}
+                style={{marginVertical: '5%', height: '40%'}}
+                onChangeText={text => setComentario(text)}
+              />
+              <FilledButton
+                title="Editar Comentario"
+                style={{marginTop: '5%'}}
+                onPress={() => handleUpdateButtonPress()}
+              />
+              <FilledButton
+                title="Eliminar Comentario"
+                style={{marginTop: '5%', backgroundColor: Colors.RED}}
+                onPress={() => handleDeleteButtonPress()}
+              />
+            </Overlay>
+          </KeyboardAvoidingView>}
           <Overlay
             isVisible={overlayConfiguracion}
             onBackdropPress={() => setOverlayConfiguracion(false)}

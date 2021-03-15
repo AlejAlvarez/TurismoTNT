@@ -114,26 +114,26 @@ export default function MapScreen({navigation}) {
     let gastronomicos = gastronomicosMeta.data;
     if (localidad != null) {
       gastronomicos = gastronomicos.filter(
-        gastronomico => gastronomico.localidade?.id == localidad,
+        gastronomico => gastronomico.comercio.localidad.id == localidad,
       );
     }
     if (actividad != null) {
-      const checkAct = item => item.actividade.id === actividad;
+      const checkAct = item => item.actividad.id === actividad;
       gastronomicos = gastronomicos.filter(gastronomico =>
-        gastronomico.actividad_gastronomicos?.some(checkAct),
+        gastronomico.actividades_gastronomico?.some(checkAct),
       );
     }
     if (especialidad != null) {
       const checkEsp = item => item.especialidade.id === especialidad;
       gastronomicos = gastronomicos.filter(gastronomico =>
-        gastronomico.especialidad_gastronomicos?.some(checkEsp),
+        gastronomico.especialidades_gastronomico?.some(checkEsp),
       );
     }
     if (search === '') {
       return gastronomicos;
     } else {
       return gastronomicos.filter(gastronomico =>
-        gastronomico.nombre.toLowerCase().includes(search.toLowerCase()),
+        gastronomico.comercio.nombre.toLowerCase().includes(search.toLowerCase()),
       );
     }
   };
@@ -257,10 +257,11 @@ export default function MapScreen({navigation}) {
                 latitude: alojamiento.comercio.lat,
                 longitude: alojamiento.comercio.lng,
               }}
+              tracksViewChanges={false}
               onPress={event => {
                 event.stopPropagation();
                 setActiveMarker(true);
-                setItem(item);
+                setItem(alojamiento);
               }}>
               <View
                 style={{
@@ -282,6 +283,7 @@ export default function MapScreen({navigation}) {
                 latitude: gastronomico.comercio.lat,
                 longitude: gastronomico.comercio.lng,
               }}
+              tracksViewChanges={false}
               onPress={event => {
                 event.stopPropagation();
                 setActiveMarker(true);
@@ -314,10 +316,11 @@ export default function MapScreen({navigation}) {
                 latitude: alojamiento.comercio.lat,
                 longitude: alojamiento.comercio.lng,
               }}
+              tracksViewChanges={false}
               onPress={event => {
                 event.stopPropagation();
                 setActiveMarker(true);
-                setItem(item);
+                setItem(alojamiento);
               }}>
               <View
                 style={{
@@ -339,6 +342,7 @@ export default function MapScreen({navigation}) {
                 latitude: gastronomico.comercio.lat,
                 longitude: gastronomico.comercio.lng,
               }}
+              tracksViewChanges={false}
               onPress={event => {
                 event.stopPropagation();
                 setActiveMarker(true);
@@ -360,6 +364,15 @@ export default function MapScreen({navigation}) {
           ))}
         </MapView>
       )}
+      <SearchBar
+        round
+        placeholder="Filtrar por nombre..."
+        onChangeText={text => setSearch(text)}
+        onClear={() => setSearch('')}
+        value={search}
+        lightTheme={true}
+        containerStyle={{width: "100%", top: 2, position: "absolute"}}
+      />
       <IconButton
         iconName={'magnify'}
         iconSize={30}
@@ -384,7 +397,7 @@ export default function MapScreen({navigation}) {
       <Overlay
         isVisible={activeMarker}
         onBackdropPress={() => setActiveMarker(false)}
-        overlayStyle={{height: 420, width: 280}}>
+        overlayStyle={{height: 420, width: 280, borderRadius: 10}}>
         {activeMarker && (
           <View
             style={{
@@ -393,9 +406,9 @@ export default function MapScreen({navigation}) {
               justifyContent: 'center',
               backgroundColor: Colors.WHITE,
             }}>
-            {item.foto ? (
+            {item.comercio.foto ? (
               <Image
-                source={{uri: item.foto}}
+                source={{uri: item.comercio.foto}}
                 style={{width: 250, height: 200, padding: 10}}
                 PlaceholderContent={<ActivityIndicator />}
               />
@@ -407,7 +420,7 @@ export default function MapScreen({navigation}) {
               />
             )}
             <Text h3 style={{padding: 10}}>
-              {item.nombre}
+              {item.comercio.nombre}
             </Text>
             <TouchableOpacity
               style={mapStyles.button}
@@ -423,15 +436,6 @@ export default function MapScreen({navigation}) {
         onBackdropPress={() => setIsVisibleOverlay(false)}
         overlayStyle={{height: 600, width: 300}}>
         <Text h3>Filtros</Text>
-        <SearchBar
-          round
-          placeholder="Filtrar por nombre..."
-          onChangeText={text => setSearch(text)}
-          onClear={() => setSearch('')}
-          value={search}
-          lightTheme={true}
-          style={{paddingBottom: 5}}
-        />
         <Text h4>Localidad</Text>
         <RNPickerSelect
           style={{width: '50%', backgroundColor: 'lightyellow'}}

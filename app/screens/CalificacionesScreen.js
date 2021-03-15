@@ -196,7 +196,7 @@ export default (CalificacionesScreen = ({navigation, route}) => {
           onBackdropPress={() => setIsVisibleOverlay(false)}
           overlayStyle={{
             width: '80%',
-            height: '70%',
+            height: 380,
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 10,
