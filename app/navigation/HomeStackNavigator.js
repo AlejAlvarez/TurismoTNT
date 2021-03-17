@@ -26,18 +26,16 @@ export default function HomeStackNavigator(){
             <Stack.Screen
                 name="Home"
                 component={HomeScreen}
-                options={({navigation}) => ({
+                options={() => ({
                   headerTitle: () => <TurAppTitleLogo/>,
-                  headerTitleAlign: 'center',
-                  headerRight: () => <IconButton iconName="chat" iconSize={30} style={homeScreenStyles.chatBtn}
-                  onPress={() => navigation.navigate('Chat')}/>})}/>
+                  headerTitleAlign: 'center'})}/>
             <Stack.Screen
                 name="Alojamientos"
                 component={AlojamientosListScreen} />
             <Stack.Screen
                 name="AlojamientoDetails"
                 component={AlojamientoDetailsScreen}
-                options={({ navigation, route }) => ({ title: route.params.item.comercio.nombre })} />
+                options={({ route }) => ({ title: route.params.item.comercio.nombre })} />
             <Stack.Screen
                 name="RecuerdosAlojamiento"
                 component={RecuerdosAlojamientoScreen}
@@ -48,7 +46,7 @@ export default function HomeStackNavigator(){
             <Stack.Screen
                 name="GastronomicoDetails"
                 component={GastronomicoDetailsScreen}
-                options={({ navigation, route }) => ({title: route.params.item.comercio.nombre})} />
+                options={({ route }) => ({title: route.params.item.comercio.nombre})} />
             <Stack.Screen
                 name="RecuerdosGastronomico"
                 component={RecuerdosGastronomicoScreen}
@@ -62,7 +60,8 @@ export default function HomeStackNavigator(){
                 component={MapScreen} />
             <Stack.Screen
                 name="Chat"
-                component={ChatScreen} />
+                component={ChatScreen}
+                options={{headerTitleAlign: 'center'}} />
             <Stack.Screen
                 name="Login"
                 component={LoginScreen}

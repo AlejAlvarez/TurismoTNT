@@ -10,4 +10,6 @@ export default {
   GRAY: '#757780',
   LIGHTGRAY: '#C2C2C2',
   ORANGE: '#E08C1D',
+  BUBBLEBLUE: '#007AFF',
+  BUBBLEWHITE: '#DDDDDD',
 };

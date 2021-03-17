@@ -1,8 +1,16 @@
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import { client } from '@graphql/client';
 import { CALIFICACIONES_QUERY } from '@graphql/queries';
 
+const ELIMINAR_CALIFICACION = gql`
+mutation eliminar_calificacion ($calificacion_id: Int!) {
+  delete_calificaciones(where: {id: {_eq: $calificacion_id}}) {
+    affected_rows
+  }
+}`
+
 export default function CalificacionesService() {
+  const [eliminarCalificacion] = useMutation(ELIMINAR_CALIFICACION);
   
   const getAll = async () => {
     const response = await client.query({
@@ -117,25 +125,22 @@ export default function CalificacionesService() {
   };
 
   const drop = async calificacion_id => {
-    const response = await client.mutate({
-      mutation: gql`
-        mutation MyMutation {
-          delete_calificaciones(where: {id: {_eq: ${calificacion_id}}}) {
-            affected_rows
-            returning {
-              calificacion
-              comentario
-              id
-              usuario {
-                nombre
-                apellido
-              }
-            }
-          }
-        }
-      `,
-    });
-    return response.data.delete_calificaciones;
+    const response = await eliminarCalificacion({
+      variables: { calificacion_id },
+      update(cache) {
+        cache.modify({
+          fields: {
+            calificaciones(existingCalificacionesRefs, { readField }) {
+              return existingCalificacionesRefs.filter(
+                calificacionRef => calificacion_id !== readField(calificacion_id, calificacionRef),
+                );
+              },
+            },
+          });
+        },
+      });
+    console.log("Respuesta: " + response);
+    return response;
   };
 
   return [

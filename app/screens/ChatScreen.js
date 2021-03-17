@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { KeyboardAvoidingView, View, FlatList, ActivityIndicator } from 'react-native';
-import { Text, Button } from 'react-native-elements';
+import { Text } from 'react-native-elements';
 import Input from '@components/Input';
 import Colors from '@styles/colors';
 import Comment from '@components/Comment';
+import MessageBubble from '@components/MessageBubble';
 import IconButton from '@components/IconButton';
 
 const GET_MENSAJES = gql`
@@ -68,29 +69,35 @@ export default function ChatScreen({ navigation }) {
   const _renderMensaje = ({item}) => (
     <View>
       {usuario.email == item.usuario.email ? (
+        <View>
           <Text style={{
             fontSize: 14, 
             fontWeight: 'bold',
-            marginLeft: '8%',
-            marginBottom: '2%',
+            marginRight: '12%',
             flexDirection: 'row',
-            alignSelf: 'flex-start'}}>
-            Vos:
+            alignSelf: 'flex-end'}}>
+            Usted:
           </Text>
+          <MessageBubble mine texto={item.texto}/>
+        </View>
       ) : (
+        <View>
           <Text style={{
             fontSize: 14, 
             fontWeight: 'bold',
             marginLeft: '5%',
-            marginBottom: '2%',
             flexDirection: 'row',
             alignSelf: 'flex-start'}}>
             {item.usuario.nombre} {item.usuario.apellido}:
           </Text>
+          <MessageBubble texto={item.texto}/>
+        </View>
       )}
+      {/*
       <Comment style={{marginBottom: '10%'}}>
         <Text style={{marginLeft: '5%', marginRight: 5}}>{item.texto}</Text>
       </Comment>
+      */}
     </View>
   );
 

@@ -29,7 +29,6 @@ export default function ProfileScreen({navigation}) {
   const [isVisibleOverlay, setIsVisibleOverlay] = useState(false);
   const [calificacion, setCalificacion] = useState(null);
   const [comentario, setComentario] = useState('');
-  const [calificacionesModificadas, setCalificacionesModificadas] = useState(0);
   const calificacionesPosibles = [
     {valor: 1, nombre: 'Buena'},
     {valor: 2, nombre: 'Medio'},
@@ -38,6 +37,7 @@ export default function ProfileScreen({navigation}) {
 
   const fetchCalificaciones = async () => {
     let response = await calificacionesMeta.getByUsuario(usuario.id);
+    console.log(response);
     setCalificaciones(response);
   };
 
@@ -55,7 +55,7 @@ export default function ProfileScreen({navigation}) {
       setPassword(usuario.password);
       fetchCalificaciones();
     }
-  }, [usuario, calificaciones]);
+  }, [usuario]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -123,6 +123,7 @@ export default function ProfileScreen({navigation}) {
         nuevoPassword,
       );
     }
+    setOverlayConfiguracion(false);
   };
 
   const dropUsuario = async () => {
@@ -132,21 +133,26 @@ export default function ProfileScreen({navigation}) {
 
   const handleUpdateButtonPress = async () => {
     await calificacionesMeta.update(calificacionSelecc.id, calificacion, comentario);
-    setCalificacionesModificadas(calificacionesModificadas + 1);
+    let index = calificaciones.findIndex(c => c.id == calificacionSelecc.id);
+    let calificacionesActualizadas = [...calificaciones];
+    let calificacionMin = {
+      calificacion,
+      comentario
+    };
+    let calificacionActualizada = {...calificacionSelecc, ...calificacionMin};
+    calificacionesActualizadas.splice(index, 1, calificacionActualizada);
+    setCalificaciones(calificacionesActualizadas);
     setIsVisibleOverlay(false);
   };
 
   const handleDeleteButtonPress = async () => {
     await calificacionesMeta.drop(calificacionSelecc.id);
-    setCalificacionesModificadas(calificacionesModificadas + 1);
+    let index = calificaciones.findIndex(c => c.id == calificacionSelecc.id);
+    let calificacionesActualizadas = [...calificaciones];
+    calificacionesActualizadas.splice(index, 1);
+    setCalificaciones(calificacionesActualizadas);
     setIsVisibleOverlay(false);
   };
-
-  useEffect(() => {
-    if(usuario != null){
-      fetchCalificaciones();
-    }
-  }, [calificacionesModificadas]);
   
   const _renderCalificacion = ({item}) => (
     <View>
@@ -190,6 +196,10 @@ export default function ProfileScreen({navigation}) {
       </TouchableOpacity>
     </View>
   );
+
+  const getCalificaciones = () => {
+    return calificaciones;
+  }
 
   return (
     <View style={{flex: 1}}>
@@ -245,7 +255,7 @@ export default function ProfileScreen({navigation}) {
             <FlatList
               initialNumToRender={5}
               windowSize={5}
-              data={calificaciones}
+              data={getCalificaciones()}
               ListEmptyComponent={
                 <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   <Text>
@@ -269,12 +279,12 @@ export default function ProfileScreen({navigation}) {
               onBackdropPress={() => setIsVisibleOverlay(false)}
               overlayStyle={{
                 width: '80%',
-                height: '80%',
+                height: 450,
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 10,
               }}>
-              <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: '5%'}}>
+              <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 10}}>
                 Comentario en {calificacionSelecc.comercio.nombre}:
               </Text>
               <RNPickerSelect
@@ -291,17 +301,17 @@ export default function ProfileScreen({navigation}) {
               <TextArea
                 placeholder={'Escribe un nuevo comentario...'}
                 value={comentario}
-                style={{marginVertical: '5%', height: '40%'}}
+                style={{marginVertical: 10, height: 140}}
                 onChangeText={text => setComentario(text)}
               />
               <FilledButton
                 title="Editar Comentario"
-                style={{marginTop: '5%'}}
+                style={{marginTop: 10}}
                 onPress={() => handleUpdateButtonPress()}
               />
               <FilledButton
                 title="Eliminar Comentario"
-                style={{marginTop: '5%', backgroundColor: Colors.RED}}
+                style={{marginTop: 10, backgroundColor: Colors.RED}}
                 onPress={() => handleDeleteButtonPress()}
               />
             </Overlay>
@@ -309,7 +319,7 @@ export default function ProfileScreen({navigation}) {
           <Overlay
             isVisible={overlayConfiguracion}
             onBackdropPress={() => setOverlayConfiguracion(false)}
-            overlayStyle={{height: '90%', width: '84%', alignItems: 'center', justifyContent: 'center'}}>
+            overlayStyle={{height: 540, width: '84%', alignItems: 'center', justifyContent: 'center'}}>
             <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 20}}>
               Editar Perfil
             </Text>
@@ -348,7 +358,6 @@ export default function ProfileScreen({navigation}) {
               style={profileScreenStyles.confirmButton}
               onPress={() => {
                 updateUsuario();
-                setOverlayConfiguracion(false);
                 //console.log(nombre, apellido, email, password);
               }}
             />
