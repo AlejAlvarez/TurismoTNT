@@ -55,7 +55,7 @@ export default function ProfileScreen({navigation}) {
       setPassword(usuario.password);
       fetchCalificaciones();
     }
-  }, [usuario]);
+  }, [usuario, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

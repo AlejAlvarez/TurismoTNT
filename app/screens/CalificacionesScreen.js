@@ -28,6 +28,7 @@ export default (CalificacionesScreen = ({navigation, route}) => {
 
   const fetchCalificaciones = async () => {
     let response = await calificacionesMeta.getByComercio(item.comercio.id);
+    console.log(response);
     setCalificaciones(response);
   };
 
@@ -112,12 +113,19 @@ export default (CalificacionesScreen = ({navigation, route}) => {
   };
 
   const handleAddCommentButtonPress = async () => {
-    await calificacionesMeta.insert(
+    let datosNueva = await calificacionesMeta.insert(
       item.comercio.id,
       usuario.id,
       calificacion,
       comentario,
     );
+    setCalificacion(null);
+    setComentario('');
+    let nueva = datosNueva.returning;
+    console.log("nueva:")
+    console.log(nueva);
+    setCalificaciones([...calificaciones, ...nueva])
+    console.log(calificaciones);
     setIsVisibleOverlay(false);
   };
 

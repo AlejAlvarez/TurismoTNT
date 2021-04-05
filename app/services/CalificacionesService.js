@@ -10,7 +10,11 @@ mutation eliminar_calificacion ($calificacion_id: Int!) {
 }`
 
 export default function CalificacionesService() {
-  const [eliminarCalificacion] = useMutation(ELIMINAR_CALIFICACION);
+  const [eliminarCalificacion] = useMutation(ELIMINAR_CALIFICACION, {
+    refetchQueries: [{
+      query: CALIFICACIONES_QUERY
+    }]
+  });
   
   const getAll = async () => {
     const response = await client.query({
@@ -36,6 +40,28 @@ export default function CalificacionesService() {
                 }
               }
             }
+            `,
+    });
+    return response.data.calificaciones;
+  };  
+  
+  const getByID = async id => {
+    const response = await client.query({
+      query: gql`
+          query MyQuery {
+            calificaciones(where: {id: {_eq: ${id}}}) {
+              id
+              calificacion
+              comentario
+              comercio {
+                nombre
+              }
+              usuario {
+                nombre
+                apellido
+              }
+            }
+          }
             `,
     });
     return response.data.calificaciones;
@@ -92,6 +118,9 @@ export default function CalificacionesService() {
                 usuario {
                   nombre
                   apellido
+                }
+                comercio {
+                  nombre
                 }
               }
             }
@@ -152,6 +181,7 @@ export default function CalificacionesService() {
       insert,
       update,
       drop,
+      getByID
     },
   ];
 }
